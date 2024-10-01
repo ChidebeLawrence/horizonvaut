@@ -1,0 +1,57 @@
+@import url("http://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap");
+
+body {
+  @apply font-sans;
+  color: #ffffff;
+  background-color: #eaecef;
+  font-size: 14px;
+  line-height: normal;
+}
+
+.menu__overview:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 15px;
+  height: 100%;
+  background: #5a2ca4;
+  border-radius: 5px 0 0 5px;
+}
+
+.w-fill-available {
+  width: -webkit-fill-available;
+}
+
+.border-gradient-bottom {
+  position: relative;
+  border-bottom: 3px solid transparent;
+}
+
+.border-gradient-bottom:before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #7044ee 0%, #cc44ee 100.84%);
+}
+
+.custom-dotted-list {
+    list-style-type: dotted;
+  }
+
+  /* styles/globals.css or another global CSS file */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.w-fill-available {
+  width: -webkit-fill-available;
+}
