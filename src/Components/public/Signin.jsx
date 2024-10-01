@@ -31,17 +31,12 @@ function Signin() {
 
             const data = await response.json();
 
-            console.log(data.data);
-
             if (!response.ok) {
                 throw new Error(data.message || 'Something went wrong');
             }
 
-            // Store the JWT token in local storage
             localStorage.setItem('authToken', data.data.access_token);
-            console.log(response.data);
-
-
+            
             setMessageColor('limegreen');
             setMessage(data.message);
 

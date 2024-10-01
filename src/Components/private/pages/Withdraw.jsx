@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import SubHeader from '@/Utilities/SubHeader'
@@ -12,6 +12,10 @@ function Withdraw() {
     const depositCoin = coins.filter((coin) => coin.Deposit)
     const networkCoin = depositCoin.slice(0, 1)
 
+    const [balance, setBalance] = useState({
+        balance: 0,
+        wallet_name: "BTC"
+    });
     const [destinationAddress, setDestinationAddress] = useState('');
     const [amount, setAmount] = useState('');
     const [loading, setLoading] = useState(false);
@@ -90,7 +94,7 @@ function Withdraw() {
                 body: JSON.stringify(withdrawalData),
             });
 
-            if (response.ok) {                
+            if (response.ok) {
                 setWithdrawalMessage('Withdrawal successful!');
                 setMessageColor('limegreen');
             } else {
@@ -101,6 +105,46 @@ function Withdraw() {
         } catch (error) {
             setMessageColor('orangered');
             setMessage("An error occurred. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            handleBalance()
+        };
+    }, []);
+    
+    const handleBalance = async () => {
+        const token = localStorage.getItem('authToken');
+
+        if (!token) {
+            setMessageColor('orangered');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch("https://api.horizonvaut.com/wallet/balance", {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Fetched Balance:', result.data); 
+                setBalance(result.data);
+                setMessageColor('limegreen');
+            } else {
+                const error = await response.json();
+                setMessageColor('orangered');
+            }
+        } catch (error) {
+            setMessageColor('orangered');
         } finally {
             setLoading(false);
         }
@@ -229,10 +273,15 @@ function Withdraw() {
                                         <p className='px-[1rem]'>{selectedNetwork.Abbr}</p>
                                     </div>
                                 </div>
-                                <div className='flex justify-between text-[12px] mt-[3px]'>
-                                    <p>Available: 0 BTC</p>
-                                    <p>Fee: 0.000018 {selectedNetwork.Abbr}</p>
-                                </div>
+
+                                {Array.isArray(balance) && balance
+                                    .filter((coin) => coin.wallet_name === selectedCoin.Coin)
+                                    .map((coin, index) => (<div key={index} className='flex justify-between text-[12px] mt-[3px]'>
+                                        <p>Available: {coin.balance.toFixed(6)} {coin.wallet_name}</p>
+                                        <p>Fee: 0 {coin.wallet_name}</p>
+                                    </div>
+                                    ))}
+
                                 {withdrawalMessage && <p style={{ color: messageColor }}>{withdrawalMessage}</p>}
                                 <div>
                                     <button type='submit' className={`bg-[#7044ee] text-white w-full py-[16px] rounded-md mt-[32px] hover:bg-[#825fe9] ${loading ? 'opacity-50 cursor-default' : ''}`} disabled={loading}>

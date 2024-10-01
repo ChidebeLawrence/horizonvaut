@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import Bomiblogo from "@/assets/images/bomib.com_logo.png"
 import { Link, useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
@@ -20,81 +19,6 @@ function Signup() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (password !== repeatPassword) {
-  //     setMessageColor('orange');
-  //     setMessage("Passwords do not match.");
-  //     return;
-  //   }
-
-  //   setLoading(true);
-
-  //   try {
-  //     // Prepare request options for sign-up API
-  //     const requestOptions = {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         username: name,
-  //         email,
-  //         password,
-  //       }),
-  //     };
-
-  //     // Call sign-up API
-  //     const response = await fetch('https://api.horizonvaut.com/auth/sign-up', requestOptions);
-  //     const data = await response.json();
-  //     const messageFromResponse = data.message;
-
-  //     // Map response messages to colors
-  //     const messageColors = {
-  //       "Username already exists": 'orange',
-  //       "Email already exists": 'orange',
-  //       "Registration successful": 'limegreen',
-  //     };
-
-  //     // Set message and color based on response
-  //     setMessageColor(messageColors[messageFromResponse] || 'orangered');
-  //     setMessage(messageFromResponse || "An unexpected error occurred.");
-
-  //     if (messageFromResponse === "Registration successful") {
-  //       setName('');
-  //       setEmail('');
-  //       setPassword('');
-  //       setRepeatPassword('');
-
-  //       const jwt_token = data.data.access_token;
-
-  //       const accountSetupResponse = await fetch('https://api.horizonvaut.com/auth/account-setup', {
-  //         method: 'GET',
-  //         headers: {
-  //           'Authorization': `Bearer ${jwt_token}`,
-  //           'Content-Type': 'application/json',
-  //         },
-  //       });
-
-  //       const accountSetupData = await accountSetupResponse.json();
-  //       console.log(accountSetupData.data);
-  //       console.log(response.data);
-        
-  //       // navigate('/profile/settings');
-  //     }
-
-  //   } catch (error) {
-  //     // General error handling
-  //     setMessageColor('orangered');
-  //     setMessage("An error occurred. Please try again.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-
-
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -107,7 +31,6 @@ function Signup() {
     setLoading(true);
   
     try {
-      // Prepare request options for sign-up API
       const requestOptions = {
         method: 'POST',
         headers: {
@@ -120,24 +43,20 @@ function Signup() {
         }),
       };
   
-      // Call sign-up API
       const response = await fetch('https://api.horizonvaut.com/auth/sign-up', requestOptions);
       const data = await response.json();
       const messageFromResponse = data.message;
   
-      // Map response messages to colors
       const messageColors = {
         "Username already exists": 'orange',
         "Email already exists": 'orange',
         "Registration successful": 'limegreen',
       };
   
-      // Set message and color based on response
       setMessageColor(messageColors[messageFromResponse] || 'orangered');
       setMessage(messageFromResponse || "An unexpected error occurred.");
   
       if (messageFromResponse === "Registration successful") {
-        // Clear input fields
         setName('');
         setEmail('');
         setPassword('');
@@ -145,7 +64,6 @@ function Signup() {
   
         const jwt_token = data.data.access_token;
   
-        // Call account setup API
         const accountSetupResponse = await fetch('https://api.horizonvaut.com/auth/account-setup', {
           method: 'GET',
           headers: {
@@ -155,12 +73,8 @@ function Signup() {
         });
   
         const accountSetupData = await accountSetupResponse.json();
-        console.log(accountSetupData.data);
-        console.log(response);
         
-  
-        // Redirect user to account setup page
-        // navigate('/profile/settings');
+          // navigate('/profile/settings');
       }
   
     } catch (error) {

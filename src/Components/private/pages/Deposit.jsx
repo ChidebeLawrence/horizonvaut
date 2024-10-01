@@ -1,15 +1,13 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { QRCode } from 'antd';
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import ClipLoader from "react-spinners/ClipLoader";
 import SubHeader from '@/Utilities/SubHeader'
 import Info from '@/assets/images/info.svg'
 import Img from '@/assets/images/btc.png'
 import Card from '@/assets/images/card (1).png'
-import Generator from '@/assets/images/generator.png'
 import Coin from '@/assets/images/coin.svg'
-import axios from 'axios';
-import { useEffect } from 'react';
 
 function Deposite() {
     const wallet_overview = <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,6 +20,13 @@ function Deposite() {
 
     const findCoin = coins.find(coin => coin.Abbr)
 
+    const [coin, setCoin] = useState('');
+    const [network, setNetwork] = useState('');
+    const [destinationAddress, setDestinationAddress] = useState('');
+    const [amount, setAmount] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const [selectOption, setSelectOption] = useState(false)
     const [selectedCoin, setSelectedCoin] = useState({
         Coin: "Bitcoin",
@@ -78,6 +83,16 @@ function Deposite() {
     const [isCopied, setIsCopied] = useState(false);
     const inputRef = useRef(null);
 
+    const [size, setSize] = useState(197);
+
+    const handleChange = (e) => {
+        setInputValue(e.target.value);
+    };
+
+    const handleSizeChange = (e) => {
+        setSize(e.target.value);
+    };
+
     const handleCopy = () => {
         const textToCopy = inputRef.current.value;
         if (textToCopy) {
@@ -91,25 +106,90 @@ function Deposite() {
     };
 
     const transferData = {
-         "wallet_name" : "bitcoin"
+        "wallet_name": "bitcoin"
     }
 
-    const handleDeposit = async (e) => {
-        e.preventDefault();
+    const handleDeposit = async () => {
+        const token = localStorage.getItem('authToken');
+
+        if (!token) {
+            setTransferMessage('You must be logged in to transfer.');
+            setLoading(false);
+            return;
+        }
+
+        const withdrawalData = {
+            coin,
+            network,
+            destination_address: destinationAddress,
+            amount,
+        };
 
         try {
             const response = await fetch("https://api.horizonvaut.com/wallet/withdraw", {
-                method: "GET",
+                method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
                 },
-                body: JSON.stringify(transferData)
+                body: JSON.stringify(withdrawalData),
             })
-            } catch (error) {
-            
+
+            const result = await response.json()
+            console.log(result);
+
+            if (response.ok) {
+                console.log("Success");
+
+            }
+
+        } catch (error) {
+            console.log("Error: ", error);
+
+        }
+    }
+
+
+    const handleBalance = async () => {
+        const token = localStorage.getItem('authToken');
+
+        if (!token) {
+            setBalanceMessage('You must be logged in to view your balance.');
+            setMessageColor('orangered');
+            setLoading(false);
+            return;
         }
 
-    }
+        try {
+            const response = await fetch("https://api.horizonvaut.com/wallet/balance", {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+            const result = await response.json();
+            console.log(result.data);
+
+
+            if (response.ok) {
+                // console.log('Fetched Balance:', result.data); // Log the result to inspect it
+                setBalance(result.data);
+            }
+        } catch (error) {
+            console.log(error);
+
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            handleDeposit();
+            handleBalance();
+        };
+    }, []);
 
     const copy = <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M7.5 11.9058C7.5 9.53335 7.5 8.34712 8.23223 7.61008C8.96447 6.87305 10.143 6.87305 12.5 6.87305L13.3333 6.87305C15.6904 6.87305 16.8689 6.87305 17.6011 7.61008C18.3333 8.34712 18.3333 9.53336 18.3333 11.9058V12.7446C18.3333 15.1171 18.3333 16.3033 17.6011 17.0404C16.8689 17.7774 15.6904 17.7774 13.3333 17.7774H12.5C10.143 17.7774 8.96447 17.7774 8.23223 17.0404C7.5 16.3033 7.5 15.1171 7.5 12.7446L7.5 11.9058Z" stroke="#656E8B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -230,6 +310,7 @@ function Deposite() {
                                                 ref={inputRef}
                                                 type="text"
                                                 value={inputValue}
+                                                onChange={handleChange}
                                                 className='rounded-tl-md rounded-bl-md border border-[#dadada] w-[395px] px-[14px] py-[15px] text-center focus:outline-none'
                                                 disable
                                             />
@@ -253,7 +334,10 @@ function Deposite() {
                                             {showCode ? <IoIosArrowDown /> : <IoIosArrowUp />}
                                         </p>
 
-                                        {showCode && (<><br /><img src={Generator} alt='generator' className='h-[197px] w-[197px] border border-dashed border-1' /></>)}
+                                        {/* {showCode && (<><br /><img src={Generator} alt='generator' className='h-[197px] w-[197px] border border-dashed border-1' /></>)} */}
+                                        {inputValue && (
+                                            <QRCode value={inputValue} size={size} />
+                                        )}
                                     </div>
                                 )}
                             </div>

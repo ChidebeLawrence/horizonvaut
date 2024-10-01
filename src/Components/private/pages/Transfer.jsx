@@ -11,8 +11,12 @@ function Transfer() {
     const coins = useSelector((state) => state.coins)
     const depositCoin = coins.filter((coin) => coin.Deposit)
 
-    const [balanceMessage , setBalanceMessage ] = useState("");
-    const [Balance  , setBalance ] = useState("");
+
+    const [balanceMessage, setBalanceMessage] = useState("");
+    const [balance, setBalance] = useState({
+        balance: 0,
+        wallet_name: "BTC"
+    });
     const [reciver, setReciver] = useState("");
     const [amount, setAmount] = useState("");
     const [transferMessage, setTransferMessage] = useState('');
@@ -45,14 +49,13 @@ function Transfer() {
         <line x1="29.4746" y1="8.35617" x2="8.35616" y2="38.5254" stroke="#7044EE" strokeWidth="12" strokeLinecap="round"></line>
     </svg>
 
-
     const handleTransfer = async (e) => {
         e.preventDefault();
         setLoading(true);
         setTransferMessage('');
 
-        if (isNaN(amount) || amount <= 0) {
-            setTransferMessage('Transfer amount must be greater than 0.');
+        if (isNaN(amount) || amount <= 4) {
+            setTransferMessage('Minimum transfer is 5 USD.');
             setMessageColor('orangered'); // Set message color to red for error
             setLoading(false);
             return;
@@ -81,78 +84,84 @@ function Transfer() {
                     "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify(transferData),
-            })
+            });
 
             if (response.ok) {
                 const result = await response.json();
                 setTransferMessage('Transfer successful!');
                 setMessageColor('limegreen');
-                console.log("Approved", result);
-
+                setReciver("");
+                setAmount("");
             } else {
                 const error = await response.json();
-                setTransferMessage(error.message || 'Transfer failed. Please try again.');
-                setMessageColor("orangered")
-                console.error("Error: ", error);
+                if (error.message === "Expired token") {
+                    // Handle expired token: Clear the token and redirect to login
+                    localStorage.removeItem('authToken'); // Clear the token
+                    setTransferMessage('Your session has expired. Please log in again.');
+                    setMessageColor("orangered");
+                    setTimeout(() => {
+                        window.location.href = '/signin'; // Redirect to login page
+                    }, 2000); // Wait for 2 seconds before redirect
+                } else {
+                    setTransferMessage(error.message || 'Transfer failed. Please try again.');
+                    setMessageColor("orangered");
+                }
             }
         } catch (error) {
-            console.log("Error", error);
-            setTransferMessage("Error", error.message);
+            if (error.message === 'Failed to fetch') {
+                setTransferMessage('Please check your internet connection.');
+            } else {
+                setTransferMessage("Error: " + error.message);
+            }
             setMessageColor('orangered');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
-    // useEffect(() => {
-    //     return () => {
-    //         handleBalance()
-    //     };
-    // }, []);
+    useEffect(() => {
+        return () => {
+            handleBalance()
+        };
+    }, []);
 
-    // const handleBalance = async (e) => {
-    //     const token = localStorage.getItem('authToken');
+    const handleBalance = async () => {
+        const token = localStorage.getItem('authToken');
 
-    //     if (!token) {
-    //         setBalanceMessage('You must be logged in to view your balance.');
-    //         setMessageColor('orangered');
-    //         setLoading(false);
-    //         return;
-    //     }
+        if (!token) {
+            setBalanceMessage('You must be logged in to view your balance.');
+            setMessageColor('orangered');
+            setLoading(false);
+            return;
+        }
 
-    //     try {
-    //         const response = await fetch("https://api.horizonvaut.com/wallet/balance", {
-    //             method: 'GET',
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 "Authorization": `Bearer ${token}`,
-    //             },
-    //         });
+        try {
+            const response = await fetch("https://api.horizonvaut.com/wallet/balance", {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
 
-    //         console.log(response);
-            
-
-    //         if (response.ok) {
-    //             const result = await response.json();
-    //             setBalanceMessage('Balance fetched successfully!');
-    //             setMessageColor('limegreen');
-    //             console.log("Result: ", result.data); // Log the result for debugging
-
-    //             setBalance(result.balance); // Assuming the balance data is in result.balance
-    //         } else {
-    //             const error = await response.json();
-    //             console.error("Error:", error);
-    //             setBalanceMessage(error.message || 'Failed to fetch balance. Please try again.');
-    //             setMessageColor('orangered');
-    //         }
-    //     } catch (error) {
-    //         console.log("Error", error);
-    //         setBalanceMessage('An error occurred. Please try again.');
-    //         setMessageColor('orangered');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Fetched Balance:', result.data); // Log the result to inspect it
+                setBalance(result.data); // Ensure result.data is an array
+                setBalanceMessage('Balance fetched successfully!');
+                setMessageColor('limegreen');
+            } else {
+                const error = await response.json();
+                setBalanceMessage(error.message || 'Failed to fetch balance. Please try again.');
+                setMessageColor('orangered');
+            }
+        } catch (error) {
+            setBalanceMessage('An error occurred. Please try again.');
+            setMessageColor('orangered');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
@@ -179,12 +188,15 @@ function Transfer() {
 
                                 <div className='relative z-10 shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)'>
                                     {selectOption && (
-                                        <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>                                            {depositCoin.map((coin, index) => (
-                                            <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
-                                                <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" />
-                                                <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
-                                                <p className='font-semibold'>{coin.Abbr}</p>
-                                            </div>
+                                        <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>{depositCoin.map((coin, index) => (
+                                            (
+                                                depositCoin.map((coin, index) => (
+                                                    <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
+                                                        <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" />
+                                                        <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
+                                                        <p className='font-semibold'>{coin.Abbr}</p>
+                                                    </div>))
+                                            )
                                         ))}
                                         </div>
                                     )}
@@ -241,13 +253,18 @@ function Transfer() {
                                     <div className='absolute right-[20px] py-[16px] flex gap-[20px]'>
                                         <p className='px-[1rem] cursor-pointer text-[#7044ee]'>All</p>
                                         <p className='mt-[-10px] mb-[-10px] border border-r-[#dadada]'></p>
-                                        <p className='px-[1rem]'>BTC</p>
+                                        <p className='px-[1rem]'>{selectedCoin.Abbr}</p>
                                     </div>
                                 </div>
-                                <div className='flex justify-between text-[12px] mt-[3px]'>
-                                    <p>Available: 0 BTC</p>
-                                    <p>Fee: 0 BTC</p>
-                                </div>
+
+                                {Array.isArray(balance) && balance
+                                    .filter((coin) => coin.wallet_name === selectedCoin.Coin)
+                                    .map((coin, index) => (
+                                        <div key={index} className='flex justify-between text-[12px] mt-[3px]'>
+                                            <p>Available: {coin.balance.toFixed(6)} {coin.wallet_name}</p>
+                                            <p>Fee: 0 {coin.wallet_name}</p>
+                                        </div>
+                                    ))}
 
                                 {transferMessage && <p style={{ color: messageColor }}>{transferMessage}</p>}
                                 <div>
