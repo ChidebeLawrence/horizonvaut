@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { useDispatch, useSelector } from 'react-redux'
+import { IoIosArrowDown } from "react-icons/io";
 import SubHeader from '@/Utilities/SubHeader'
 import Info from '@/assets/images/info.svg'
-import Img from '@/assets/images/btc.png'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
+import { fetchWalletBalances } from '@/redux/actions';
 
 function Withdraw() {
+    const dispatch = useDispatch();
+
     const coins = useSelector((state) => state.coins)
     const depositCoin = coins.filter((coin) => coin.Deposit)
     const networkCoin = depositCoin.slice(0, 1)
@@ -16,22 +18,18 @@ function Withdraw() {
         balance: 0,
         wallet_name: "BTC"
     });
+    const [loading, setLoading] = useState(true);
     const [destinationAddress, setDestinationAddress] = useState('');
     const [amount, setAmount] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [messageColor, setMessageColor] = useState('');
     const [withdrawalMessage, setWithdrawalMessage] = useState('');
     const [openNetwork, setOpenNetwork] = useState(false)
     const [token, setToken] = useState(localStorage.getItem('authToken'));
     const [selectOption, setSelectOption] = useState(false)
-    const [selectedCoin, setSelectedCoin] = useState({
-        Coin: "Bitcoin",
-        Abbr: "BTC",
-        Image: Img,
-        Alt: "btc"
-    });
+    const [selectedCoin, setSelectedCoin] = useState({});
 
-    const popularCoins = ["USDT", "BTC", "TRX", "ETH", "USDC", "XRP", "LTC"]
+    const popularCoins = ["Tether", "Bitcoin", "Tron", "Ethereum", "USD Coin", "Dogecoin", "Litecoin"]
     const handleSelectedCoin = (coin) => {
         setSelectedCoin(coin)
         setSelectOption(false)
@@ -59,7 +57,7 @@ function Withdraw() {
 
     const handleWithdrawal = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setIsLoading(true);
         setWithdrawalMessage('');
 
         const withdrawalData = {
@@ -73,14 +71,14 @@ function Withdraw() {
 
         if (!token) {
             setWithdrawalMessage('You must be logged in to withdraw.');
-            setLoading(false);
+            setIsLoading(false);
             return;
         }
 
         if (isNaN(amount) || amount <= 0) {
             setWithdrawalMessage('Withdrawal amount must be greater than 0.');
-            setMessageColor('orangered'); // Set message color to red for error
-            setLoading(false);
+            setMessageColor('orangered');
+            setIsLoading(false);
             return;
         }
 
@@ -94,6 +92,9 @@ function Withdraw() {
                 body: JSON.stringify(withdrawalData),
             });
 
+            const result = await response.json()
+            console.log(result)
+
             if (response.ok) {
                 setWithdrawalMessage('Withdrawal successful!');
                 setMessageColor('limegreen');
@@ -106,22 +107,16 @@ function Withdraw() {
             setMessageColor('orangered');
             setMessage("An error occurred. Please try again.");
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
-    useEffect(() => {
-        return () => {
-            handleBalance()
-        };
-    }, []);
-    
     const handleBalance = async () => {
         const token = localStorage.getItem('authToken');
 
         if (!token) {
             setMessageColor('orangered');
-            setLoading(false);
+            setIsLoading(false);
             return;
         }
 
@@ -136,7 +131,6 @@ function Withdraw() {
 
             if (response.ok) {
                 const result = await response.json();
-                console.log('Fetched Balance:', result.data); 
                 setBalance(result.data);
                 setMessageColor('limegreen');
             } else {
@@ -146,9 +140,26 @@ function Withdraw() {
         } catch (error) {
             setMessageColor('orangered');
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        return () => {
+            handleBalance();
+            handleWithdrawal();
+        };
+    }, []);
+
+    useEffect(() => {
+        dispatch(fetchWalletBalances());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (coins.length > 0) {
+            setSelectedCoin(coins[0]);
+        }
+    }, [coins]);
 
     const wallet_overview = <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
         <line x1="52.4746" y1="8.35617" x2="31.3562" y2="38.5254" stroke="#FFB547" strokeWidth="12" strokeLinecap="round"></line>
@@ -170,24 +181,28 @@ function Withdraw() {
 
                                 <div onClick={handleSelectOption} className='w-full rounded-md cursor-pointer border border-[#dadada] flex items-center justify-between px-[1.5rem] py-[17px]'>
                                     <div className='flex items-center text-[#51535C]'>
-                                        <img src={selectedCoin.Image} alt={selectedCoin.Alt} className="h-6 w-6 mr-2" ></img>
+                                        {/* <img src={selectedCoin.Image} alt={selectedCoin.Alt} className="h-6 w-6 mr-2" ></img> */}
                                         <span className='mr-[3px]'>{selectedCoin.Coin}</span>
-                                        <span className='font-semibold'>{selectedCoin.Abbr}</span>
+                                        {/* <span className='font-semibold'>{selectedCoin.Abbr}</span> */}
                                     </div>
                                     <IoIosArrowDown />
                                 </div>
                                 <div className='relative z-10 shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)'>
-                                    {selectOption && (
-                                        <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
-                                            {coins.map((coin, index) => (
-                                                <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
-                                                    <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" />
-                                                    <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
-                                                    <p className='font-semibold'>{coin.Abbr}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                    {loading ?
+                                        (<ClipLoader size="20px" />)
+                                        :
+                                        (selectOption && (
+                                            <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
+                                                {coins.map((coin, index) => (
+                                                    <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
+                                                        <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" />
+                                                        <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
+                                                        <p className='font-semibold'>{coin.Abbr}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ))
+                                    }
                                 </div>
 
                                 <p className='text-[12px] py-[10px]'>Popular coins:</p>
@@ -220,14 +235,14 @@ function Withdraw() {
                                     <div onClick={handleSelectNetwork} className='w-full cursor-pointer border border-[#dadada] flex items-center justify-between px-[1.5rem] py-[12px]'>
                                         <div className='flex items-center text-[#51535C]'>
                                             <span className='mr-[3px]'>{selectedNetwork.Coin}</span>
-                                            <span className='font-semibold'>({selectedNetwork.Abbr})</span>
+                                            {/* <span className='font-semibold'>({selectedNetwork.Abbr})</span> */}
                                         </div>
                                         <IoIosArrowDown />
                                     </div>
                                     {openNetwork && (
                                         <div className='absolute top-[47px] w-full shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
                                             {networkCoin.map((coin, index) => (
-                                                <div key={index} onClickCapture={() => { handleSelectedNetwork(coin) }} className='bg-white cursor-pointer py-[12px] px-[24px] border border-[#dadada] hover:bg-[#f8fafc]'>{selectedNetwork.Coin} ({selectedNetwork.Abbr})</div>
+                                                <div key={index} onClickCapture={() => { handleSelectedNetwork(coin) }} className='bg-white cursor-pointer py-[12px] px-[24px] border border-[#dadada] hover:bg-[#f8fafc]'>{selectedNetwork.Coin}</div>
                                             ))}
                                         </div>
                                     )}
@@ -256,7 +271,7 @@ function Withdraw() {
                             <p className='bg-[#7044ee] h-[24px] w-[24px] px-[10px] py-[8px] flex items-center justify-center text-white rounded-[50%]'>4</p>
                             <div className='w-[100%]'>
                                 <p className='text-[#101828] text-[18px] font-semibold'>Amount</p>
-                                <p className='text-[12px] pt pb-[7px] pb-[15px]'>Specify the amount of coins/tokens you want to withdraw from your account</p>
+                                <p className='text-[12px] pt pb-[7px] pb-[15px]'>Specify the amount of coins tokens you want to withdraw from your account</p>
 
                                 <div className='flex gap-[7px] relative z-auto'>
                                     <input
@@ -284,10 +299,10 @@ function Withdraw() {
 
                                 {withdrawalMessage && <p style={{ color: messageColor }}>{withdrawalMessage}</p>}
                                 <div>
-                                    <button type='submit' className={`bg-[#7044ee] text-white w-full py-[16px] rounded-md mt-[32px] hover:bg-[#825fe9] ${loading ? 'opacity-50 cursor-default' : ''}`} disabled={loading}>
-                                        {loading ?
+                                    <button type='submit' className={`bg-[#7044ee] text-white w-full py-[16px] rounded-md mt-[32px] hover:bg-[#825fe9] ${isLoading ? 'opacity-50 cursor-default' : ''}`} disabled={isLoading}>
+                                        {isLoading ?
                                             <div className='flex items-center justify-center gap-2'>
-                                                Processing... <ClipLoader color={"#ffffff"} loading={loading} size={20} />
+                                                Processing... <ClipLoader color={"#ffffff"} loading={isLoading} size={20} />
                                             </div>
                                             :
                                             'Withdraw'

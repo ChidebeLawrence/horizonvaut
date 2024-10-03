@@ -6,10 +6,12 @@ import WalletInfoMail from "@/assets/images/walletInfoMail.svg"
 import WalletInfoId from "@/assets/images/wallet_info_id.svg"
 import Unverified from "@/assets/images/unverified.svg"
 import Search from "@/assets/images/search.svg"
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Chart from '@/Utilities/Chart';
 import SubHeader from '@/Utilities/SubHeader';
 import classNames from 'classnames';
+import { fetchWalletBalances } from '@/redux/actions';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 function Section() {
   const wallet_overview = <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,19 +24,35 @@ function Section() {
   const styleBothTabs = "flex gap-1 cursor-pointer w-fit"
   const styleMiniTab = "flex bg-bgColourThree text-colorThree rounded-md px-[14px] py-[5px] gap-[5px] w-fit uppercase text-[13px] md:text-[10px] md:items-center lg:text-[13px]"
 
-  const coins = useSelector((state) => state.coins).slice(1);
+  const coins = useSelector((state) => state.coins);
+  const dispatch = useDispatch();
 
   const dropdownRef = useRef(null);
+  const [userEmail, setUserEmail] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [userLast, setUserLast] = useState(null);
   const [balanceOption, setBalanceOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState('Total balance');
   const [searchTerm, setSearchTerm] = useState('');
   const [hideZeroEquivalent, setHideZeroEquivalent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setBalanceOption(false);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await dispatch(fetchWalletBalances());
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [dispatch]);
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -64,6 +82,14 @@ function Section() {
     setHideZeroEquivalent(prev => !prev);
   };
 
+  useEffect(() => {
+    const storedUserDetails = JSON.parse(localStorage.getItem('userDetails'));
+    setUserEmail(storedUserDetails.email);
+    setUserName(storedUserDetails.username);
+    setUserId(storedUserDetails.referral_id);
+    setUserLast(storedUserDetails.last_updated);
+  }, []);
+
   return (
     <>
       <SubHeader sub_header_icon={wallet_overview} header="Wallet overview" content="Manage your digital assets" />
@@ -72,6 +98,7 @@ function Section() {
         'mx-[15px] flex flex-col gap-[25px] my-[20px]',
         'lg:mr-[3.5rem] lg:ml-[3.5rem] lg:my-[30px]',
       )}>
+
         <div className={
           classNames(
             'flex flex-col justify-between gap-[25px] ',
@@ -130,7 +157,7 @@ function Section() {
                     <div>
                       <img src={WalletInfoUsername} alt='wallet_info_username' />
                     </div>
-                    <div className=''>lawrencechidebe@gmail.com</div>
+                    <div className=''>{userEmail}</div>
                   </div>
 
                   <div className='flex items-center gap-2 none my-1'>
@@ -138,19 +165,19 @@ function Section() {
                       <img src={WalletInfoMail} alt='wallet_Info_Mail' />
                     </span>
 
-                    <span className='truncate none mb-2'>lawrencechidebe</span>
+                    <span className='truncate none mb-2'>{userName}</span>
                   </div>
 
                   <div className='flex items-center gap-2 none mb-2'>
                     <span>
                       <img src={WalletInfoId} alt='walle_info_id' />
                     </span>
-                    <span>ID: 528968178</span>
+                    <span>ID: {userId}</span>
                   </div>
 
                   <div className='text-colorFour text-[14px]'>
                     <div>Last activity time:</div>
-                    <div>2024/09/03 08:36:27</div>
+                    <div>{userLast}</div>
                   </div>
                 </div>
 
@@ -226,33 +253,40 @@ function Section() {
               </thead>
 
               <tbody>
-                {filteredCoins.map((coin, index) => (
-                  <tr className='border-b border-gray-300' key={index}>
-                    <td className='flex items-center pl-[2rem] w-[30%] h-[4rem]'>
-                      <img src={coin.Image} alt={coin.Alt} className='w-[30px] h-[30px]' />
-                      <span className='font-semibold ml-[30px] text-[#404053]'>{coin.Coin}</span>
-                      <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span>
-                    </td>
-                    <td className='w-[17.5%]'>
-                      {coin.Total}
-                      <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span>
-                    </td>
-                    <td className='w-[17.5%]'>
-                      {coin.InOrders}
-                      <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span>
-                    </td>
-                    <td className='w-[17.5%]'>
-                      {coin.Equivalent}
-                      <span className='text-colorSix ml-[4px]'>USD</span>
-                    </td>
-                    <td className='w-[17.5%]'>
-                      <div className='flex justify-end pr-[5rem]'>
-                        <a href="#" className="pr-6">{coin.Deposit}</a>
-                        <a href="#">{coin.Withdraw}</a>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {loading ?
+                  (
+                    <div className='m-4'>
+                      <ClipLoader size="30px" padding="2rem" />
+                    </div>
+                  )
+                  :
+                  filteredCoins.map((coin, index) => (
+                    <tr className='border-b border-gray-300' key={index}>
+                      <td className='flex items-center pl-[0rem] w-[30%] h-[4rem]'>
+                        {/* <img src={coin.Image} alt={coin.Alt} className='w-[30px] h-[30px]' /> */}
+                        <span className='font-semibold ml-[30px] text-[#404053]'>{coin.Coin}</span>
+                        {/* <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span> */}
+                      </td>
+                      <td className='w-[17.5%]'>
+                        {coin.Equivalent}
+                        <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span>
+                      </td>
+                      <td className='w-[17.5%]'>
+                        {coin.InOrders}
+                        <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span>
+                      </td>
+                      <td className='w-[17.5%]'>
+                        $ {coin.Total}
+                        <span className='text-colorSix ml-[4px]'>USD</span>
+                      </td>
+                      <td className='w-[17.5%]'>
+                        <div className='flex justify-end pr-[5rem]'>
+                          <a href="/profile/deposit" className="pr-6">{coin.Deposit}</a>
+                          <a href="/profile/withdraw">{coin.Withdraw}</a>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

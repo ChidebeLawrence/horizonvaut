@@ -19,17 +19,83 @@ function Signup() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (password !== repeatPassword) {
+  //     setMessageColor('orange');
+  //     setMessage("Passwords do not match.");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   try {
+  //     const requestOptions = {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         username: name,
+  //         email,
+  //         password,
+  //       }),
+  //     };
+
+  //     const response = await fetch('https://api.horizonvaut.com/auth/sign-up', requestOptions);
+  //     const data = await response.json();
+  //     const messageFromResponse = data.message;
+
+  //     const messageColors = {
+  //       "Username already exists": 'orange',
+  //       "Email already exists": 'orange',
+  //       "Registration successful": 'limegreen',
+  //     };
+
+  //     setMessageColor(messageColors[messageFromResponse] || 'orangered');
+  //     setMessage(messageFromResponse || "An unexpected error occurred.");
+
+  //     if (messageFromResponse === "Registration successful") {
+  //       setName('');
+  //       setEmail('');
+  //       setPassword('');
+  //       setRepeatPassword('');
+
+  //       const jwt_token = data.data.access_token;
+
+  //       const accountSetupResponse = await fetch('https://api.horizonvaut.com/auth/account-setup', {
+  //         method: 'GET',
+  //         headers: {
+  //           'Authorization': `Bearer ${jwt_token}`,
+  //           'Content-Type': 'application/json',
+  //         },
+  //       });
+
+  //       const accountSetupData = await accountSetupResponse.json();
+  //       navigate('/profile/wallet');
+  //     }
+
+  //   } catch (error) {
+  //     // General error handling
+  //     setMessageColor('orangered');
+  //     setMessage("An error occurred. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (password !== repeatPassword) {
       setMessageColor('orange');
       setMessage("Passwords do not match.");
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       const requestOptions = {
         method: 'POST',
@@ -42,50 +108,76 @@ function Signup() {
           password,
         }),
       };
-  
+
       const response = await fetch('https://api.horizonvaut.com/auth/sign-up', requestOptions);
       const data = await response.json();
       const messageFromResponse = data.message;
-  
+
       const messageColors = {
         "Username already exists": 'orange',
         "Email already exists": 'orange',
         "Registration successful": 'limegreen',
       };
-  
+
       setMessageColor(messageColors[messageFromResponse] || 'orangered');
       setMessage(messageFromResponse || "An unexpected error occurred.");
-  
+
       if (messageFromResponse === "Registration successful") {
         setName('');
         setEmail('');
         setPassword('');
         setRepeatPassword('');
-  
-        const jwt_token = data.data.access_token;
-  
+
+        const { access_token, username, email: userEmail, referral_id, expiration_in_seconds } = data.data;
+        const expirationTime = Date.now() + expiration_in_seconds * 1000;
+
+        // Function to format current time
+        const formatCurrentTime = () => {
+          const now = new Date();
+          const year = now.getFullYear();
+          const month = String(now.getMonth() + 1).padStart(2, '0');
+          const day = String(now.getDate()).padStart(2, '0');
+          const hours = String(now.getHours()).padStart(2, '0');
+          const minutes = String(now.getMinutes()).padStart(2, '0');
+          const seconds = String(now.getSeconds()).padStart(2, '0');
+          return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+        };
+
+        const currentTimeFormatted = formatCurrentTime();
+
+        // Storing user details in localStorage
+        localStorage.setItem('authToken', access_token);
+        localStorage.setItem('userDetails', JSON.stringify({
+          email: userEmail,
+          username,
+          referral_id,
+          last_updated: currentTimeFormatted, // Store last_updated time
+        }));
+        localStorage.setItem('tokenExpiration', expirationTime);
+
+        // Setup account
         const accountSetupResponse = await fetch('https://api.horizonvaut.com/auth/account-setup', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${jwt_token}`,
+            'Authorization': `Bearer ${access_token}`,
             'Content-Type': 'application/json',
           },
         });
-  
+
         const accountSetupData = await accountSetupResponse.json();
-        
-          // navigate('/profile/settings');
+
+        // Navigate to wallet/profile page
+        navigate('/profile/wallet');
       }
-  
+
     } catch (error) {
-      // General error handling
       setMessageColor('orangered');
       setMessage("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className='w-full lg:w-[404px] m-auto'>
       <Link to="#" className="w-fit flex items-center gap-10 py-[12px]">

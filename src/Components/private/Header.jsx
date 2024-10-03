@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import classNames from 'classnames';
 import Bomiblogo from "@/assets/images/bomib.com_logo.png"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FaCaretDown } from 'react-icons/fa';
 import Avatar from "@/assets/images/avatar.png"
 import WalletOverview from "@/assets/images/wallet-overview.svg"
@@ -24,8 +24,11 @@ import { IoClose } from "react-icons/io5";
 function Header() {
   const StyleLink = "rounded-md text-sm font-medium text-gray-300 hover:text-activeColor flex items-center h-[20px] gap-5"
 
-  const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   const handleDropdown = () => {
     setIsOpen(!isOpen);
@@ -67,6 +70,24 @@ function Header() {
   const handleCloseMenu = () => {
     setOpenMenu(false);
   };
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setTimeout(() => {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userDetails');
+      localStorage.removeItem('tokenExpiration');
+      navigate('/signin');
+    }, 500);
+  };
+
+  useEffect(() => {
+    const storedUserDetails = JSON.parse(localStorage.getItem('userDetails'));
+    setUserEmail(storedUserDetails.email);
+    setUserName(storedUserDetails.username);
+    setUserId(storedUserDetails.userId);
+  }, []);
 
   const menu = <svg width="35" height="35" viewBox="0 0 100 100">
     <path class="header__nav-line header__nav-line1" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058"></path>
@@ -133,7 +154,7 @@ function Header() {
             'lg:flex lg:items-center lg:h-[38px] hidden',
             'md:flex md:items-center md:h-[38px] hidden',
           )}>
-            lawrencechidebe@gmail.com <FaCaretDown className='text-[20px]' />
+            {userEmail} <FaCaretDown className='text-[20px]' />
           </span>
           <div className='w-[40px]'>
             <img src={Avatar} alt='avater' className='h-[40px] w-[40px] ml-[-15px]' />
@@ -178,15 +199,16 @@ function Header() {
               <ProfileTab wallet_menu={Support} alt="support" to="profile/support" title={<>Support <span className="bg-redTab text-white text-[10px] py-1 px-2 text-[8px] text-center rounded-[50%] animate-fade">1</span></>} onclick={handleDropdown} />
             </div>
 
-            <div className='flex items-center pl-[25px] pr-[20px] pb-[16px]'>
-              <Link to="/profile/2fa-security">
+            <div className='flex items-center justify-between pl-[25px] pr-[20px] pb-[16px]'>
+              <Link to="/profile/2fa-security" className='flex items-center gap-2'>
                 <img src={Avatar} alt='avatar' className='w-[42px] h-[40]' onClick={handleDropdown} />
+                <div>
+                  <p className='text-[12px]'>{userEmail}</p>
+                  <p className='text-[10px]'>{userName}</p>
+                </div>
               </Link>
-              <div className='ml-[12px] mr-[5px]'>
-                <p className='text-[12px]'>lawrencechidebe@gmail.com</p>
-                <p className='text-[10px]'>lawrencechidebe</p>
-              </div>
-              <img src={Exit} alt="exit" className='cursor-pointer' />
+
+              <img src={Exit} alt="exit" className='cursor-pointer' onClick={handleLogout} />
             </div>
           </div>
         )}

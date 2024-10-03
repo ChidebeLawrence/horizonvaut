@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { QRCode } from 'antd';
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import ClipLoader from "react-spinners/ClipLoader";
 import SubHeader from '@/Utilities/SubHeader'
 import Info from '@/assets/images/info.svg'
-import Img from '@/assets/images/btc.png'
 import Card from '@/assets/images/card (1).png'
 import Coin from '@/assets/images/coin.svg'
+import { Link } from 'react-router-dom';
+import { fetchWalletBalances } from '@/redux/actions';
 
 function Deposite() {
     const wallet_overview = <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -18,24 +19,12 @@ function Deposite() {
     const coins = useSelector((state) => state.coins)
     const depositCoin = coins.filter((coin) => coin.Deposit)
 
-    const findCoin = coins.find(coin => coin.Abbr)
-
-    const [coin, setCoin] = useState('');
-    const [network, setNetwork] = useState('');
-    const [destinationAddress, setDestinationAddress] = useState('');
-    const [amount, setAmount] = useState('');
-    const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [selectOption, setSelectOption] = useState(false)
-    const [selectedCoin, setSelectedCoin] = useState({
-        Coin: "Bitcoin",
-        Abbr: "BTC",
-        Image: Img,
-        Alt: "btc"
-    });
-    const popularCoins = ["USDT", "BTC", "TRX", "ETH", "USDC", "XRP", "LTC"]
+    const [selectedCoin, setSelectedCoin] = useState({});
+    const popularCoins = ["Tether", "Bitcoin", "Tron", "Ethereum", "USD Coin", "Dogecoin", "Litecoin"]
     const handleSelectedCoin = (coin) => {
+        setInputValue(coin.Address);
         setSelectedCoin(coin)
         setSelectOption(false)
         setSelectedNetwork({
@@ -64,14 +53,13 @@ function Deposite() {
         setOpenNetwork(false)
     }
 
+    const [size, setSize] = useState(197);
     const [showAddress, setShowAddress] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const handleShowAddress = () => {
         setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            setShowAddress(true);
-        }, 1050);
+        setIsLoading(false);
+        setShowAddress(true);
     };
 
     const [showCode, setShowCode] = useState(false);
@@ -79,19 +67,9 @@ function Deposite() {
         setShowCode(!showCode)
     }
 
-    const [inputValue, setInputValue] = useState('bc1qw7gayedse89sdqyvaj3xnk0hg47x64ysxgs7uj');
+    const [inputValue, setInputValue] = useState('');
     const [isCopied, setIsCopied] = useState(false);
     const inputRef = useRef(null);
-
-    const [size, setSize] = useState(197);
-
-    const handleChange = (e) => {
-        setInputValue(e.target.value);
-    };
-
-    const handleSizeChange = (e) => {
-        setSize(e.target.value);
-    };
 
     const handleCopy = () => {
         const textToCopy = inputRef.current.value;
@@ -105,91 +83,33 @@ function Deposite() {
         }
     };
 
-    const transferData = {
-        "wallet_name": "bitcoin"
-    }
 
-    const handleDeposit = async () => {
-        const token = localStorage.getItem('authToken');
-
-        if (!token) {
-            setTransferMessage('You must be logged in to transfer.');
-            setLoading(false);
-            return;
-        }
-
-        const withdrawalData = {
-            coin,
-            network,
-            destination_address: destinationAddress,
-            amount,
-        };
-
-        try {
-            const response = await fetch("https://api.horizonvaut.com/wallet/withdraw", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-                body: JSON.stringify(withdrawalData),
-            })
-
-            const result = await response.json()
-            console.log(result);
-
-            if (response.ok) {
-                console.log("Success");
-
-            }
-
-        } catch (error) {
-            console.log("Error: ", error);
-
-        }
-    }
-
-
-    const handleBalance = async () => {
-        const token = localStorage.getItem('authToken');
-
-        if (!token) {
-            setBalanceMessage('You must be logged in to view your balance.');
-            setMessageColor('orangered');
-            setLoading(false);
-            return;
-        }
-
-        try {
-            const response = await fetch("https://api.horizonvaut.com/wallet/balance", {
-                method: 'GET',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
-            const result = await response.json();
-            console.log(result.data);
-
-
-            if (response.ok) {
-                // console.log('Fetched Balance:', result.data); // Log the result to inspect it
-                setBalance(result.data);
-            }
-        } catch (error) {
-            console.log(error);
-
-        } finally {
-            setLoading(false);
-        }
+    const handleChange = (e) => {
+        setInputValue(e.target.value);
     };
 
+    const dispatch = useDispatch();
+    const listCoin = useSelector((state) => state.coins);
+
     useEffect(() => {
-        return () => {
-            handleDeposit();
-            handleBalance();
+        const fetchData = async () => {
+            setLoading(true);
+            await dispatch(fetchWalletBalances());
+            setLoading(false);
         };
-    }, []);
+
+        fetchData();
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (coins.length > 0) {
+            setSelectedCoin({
+                Coin: coins[0].Coin,
+                Image: coins[0].Image || '',
+            })
+            setInputValue(coins[0].Address)
+        }
+    }, [coins]);
 
     const copy = <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M7.5 11.9058C7.5 9.53335 7.5 8.34712 8.23223 7.61008C8.96447 6.87305 10.143 6.87305 12.5 6.87305L13.3333 6.87305C15.6904 6.87305 16.8689 6.87305 17.6011 7.61008C18.3333 8.34712 18.3333 9.53336 18.3333 11.9058V12.7446C18.3333 15.1171 18.3333 16.3033 17.6011 17.0404C16.8689 17.7774 15.6904 17.7774 13.3333 17.7774H12.5C10.143 17.7774 8.96447 17.7774 8.23223 17.0404C7.5 16.3033 7.5 15.1171 7.5 12.7446L7.5 11.9058Z" stroke="#656E8B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -211,45 +131,51 @@ function Deposite() {
 
                                 <div onClick={handleSelectOption} className='w-full rounded-md cursor-pointer border border-[#dadada] flex items-center justify-between px-[1.5rem] py-[17px]'>
                                     <div className='flex items-center text-[#51535C]'>
-                                        <img src={selectedCoin.Image} alt={selectedCoin.Alt} className="h-6 w-6 mr-2" ></img>
+                                        {/* <img src={selectedCoin.Image} alt={selectedCoin.Alt} className="h-6 w-6 mr-2" ></img> */}
                                         <span className='mr-[3px]'>{selectedCoin.Coin}</span>
                                         <span className='font-semibold'>{selectedCoin.Abbr}</span>
                                     </div>
                                     <IoIosArrowDown />
                                 </div>
                                 <div className='relative z-10 shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)'>
-                                    {selectOption && (
-                                        <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
-                                            {depositCoin.map((coin, index) => (
-                                                <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
-                                                    <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" />
-                                                    <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
-                                                    <p className='font-semibold'>{coin.Abbr}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                    {loading ?
+                                        (<ClipLoader size="20px" />)
+                                        :
+                                        selectOption && (
+                                            <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
+                                                {listCoin.map((coin, index) => (
+                                                    <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
+                                                        <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" />
+                                                        <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
+                                                        <p className='font-semibold'>{coin.Abbr}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                 </div>
 
                                 <p className='text-[12px] py-[10px]'>Popular coins:</p>
                                 <div className='flex flex-col gap-[15px]'>
                                     <div className='flex flex-wrap gap-[7px]'>
-                                        {popularCoins.map((abbr, index) => (
-                                            <p
-                                                key={index}
-                                                onClick={() => handleSelectedCoin(coins.find(coin => coin.Abbr === abbr))}
-                                                className={`bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[8px] py-[5px] text-[12px] text-[#404053] w-fit cursor-pointer text-center ${selectedCoin.Abbr === abbr ? 'border border-[royalblue]' : ''}`}>
-                                                {abbr}
-                                            </p>
-                                        ))}
+                                        {popularCoins.map((coinName, index) => {
+                                            const selectedCoinData = coins.find(coin => coin.Coin === coinName);
 
+                                            return (
+                                                <p
+                                                    key={index}
+                                                    onClick={() => handleSelectedCoin(selectedCoinData)}
+                                                    className={`bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[8px] py-[5px] text-[12px] text-[#404053] w-fit cursor-pointer text-center ${selectedCoin && selectedCoin.Coin === selectedCoinData?.Coin ? 'border border-[royalblue]' : ''}`}>
+                                                    {coinName}
+                                                </p>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
-                                <p className='flex gap-[7px] items-center bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[10px] py-[5px] text-[12px] mt-[12px] text-[#404053] w-fit cursor-pointer text-center'>
+                                <Link to="https://www.moonpay.com/buy" className='flex gap-[7px] items-center bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[10px] py-[5px] text-[12px] mt-[12px] text-[#404053] w-fit cursor-pointer text-center'>
                                     <img src={Card} alt="card" />
                                     Buy crypto with card
-                                </p>
+                                </Link>
                             </div>
                         </div>
 
@@ -265,7 +191,7 @@ function Deposite() {
                                     <div onClick={handleSelectNetwork} className='w-full cursor-pointer border border-[#dadada] flex items-center justify-between px-[1.5rem] py-[12px]'>
                                         <div className='flex items-center text-[#51535C]'>
                                             <span className='mr-[3px]'>{selectedNetwork.Coin}</span>
-                                            <span className='font-semibold'>({selectedNetwork.Abbr})</span>
+                                            {/* <span className='font-semibold'>({selectedNetwork.Abbr})</span> */}
                                         </div>
                                         <IoIosArrowDown />
                                     </div>
@@ -276,7 +202,7 @@ function Deposite() {
                                                     key={index}
                                                     onClickCapture={() => { handleSelectedNetwork(coin) }}
                                                     className='bg-white cursor-pointer py-[12px] px-[24px] border border-[#dadada] hover:bg-[#f8fafc]'>
-                                                    {coin.Coin} ({coin.Abbr})
+                                                    {coin.Coin}
                                                 </div>
                                             ))}
                                         </div>
@@ -312,7 +238,7 @@ function Deposite() {
                                                 value={inputValue}
                                                 onChange={handleChange}
                                                 className='rounded-tl-md rounded-bl-md border border-[#dadada] w-[395px] px-[14px] py-[15px] text-center focus:outline-none'
-                                                disable
+                                                disabled={true}
                                             />
 
                                             <div className='relative'>
@@ -334,7 +260,6 @@ function Deposite() {
                                             {showCode ? <IoIosArrowDown /> : <IoIosArrowUp />}
                                         </p>
 
-                                        {/* {showCode && (<><br /><img src={Generator} alt='generator' className='h-[197px] w-[197px] border border-dashed border-1' /></>)} */}
                                         {inputValue && (
                                             <QRCode value={inputValue} size={size} />
                                         )}

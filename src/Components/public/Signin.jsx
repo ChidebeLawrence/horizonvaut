@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ClipLoader from "react-spinners/ClipLoader";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Bomiblogo from "@/assets/images/bomib.com_logo.png";
 
 function Signin() {
@@ -9,6 +9,8 @@ function Signin() {
         <path fillRule="evenodd" clipRule="evenodd" d="M0.919934 38.0386C1.89383 35.5862 2.08883 32.7086 1.73823 30.114C1.69928 29.865 1.46562 29.6881 1.23188 29.7194C0.959194 29.7504 0.764187 29.9778 0.803143 30.2264C1.11479 32.678 0.958966 35.3977 0.0240289 37.7149C-0.0538826 37.9494 0.0630606 38.2122 0.296795 38.3018C0.569485 38.391 0.842023 38.2731 0.919934 38.0386Z" fill="black"></path>
         <path fillRule="evenodd" clipRule="evenodd" d="M0.906364 38.1686C2.58146 36.2317 5.42545 35.4399 7.95757 35.136C8.19131 35.1047 8.38609 34.8769 8.34713 34.6279C8.30818 34.3793 8.07429 34.2027 7.8016 34.2341C5.0747 34.5656 1.99735 35.4795 0.166433 37.5921C0.0106106 37.7863 0.0496424 38.0726 0.244421 38.2316C0.4392 38.3911 0.750541 38.3623 0.906364 38.1686Z" fill="black"></path>
     </svg>
+
+    const navigate = useNavigate()
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -20,6 +22,25 @@ function Signin() {
         e.preventDefault();
         setLoading(true);
 
+        if (!email || !password) {
+            setMessage('Email and password are required.');
+            return;
+        }
+
+        const formatCurrentTime = () => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+        };
+
+        const currentTimeFormatted = formatCurrentTime();
+
         try {
             const response = await fetch('https://api.horizonvaut.com/auth/login', {
                 method: 'POST',
@@ -30,15 +51,23 @@ function Signin() {
             });
 
             const data = await response.json();
+            const { access_token, username, email: userEmail, referral_id, expiration_in_seconds } = data.data;
+            const expirationTime = Date.now() + expiration_in_seconds * 1000;
 
             if (!response.ok) {
                 throw new Error(data.message || 'Something went wrong');
             }
 
-            localStorage.setItem('authToken', data.data.access_token);
-            
+            localStorage.setItem('authToken', access_token);
+            localStorage.setItem('userDetails', JSON.stringify({ email: userEmail, username, referral_id, last_updated: currentTimeFormatted }));
+            localStorage.setItem('tokenExpiration', expirationTime);
+
             setMessageColor('limegreen');
             setMessage(data.message);
+            navigate("/profile/wallet");
+
+            console.log(data);
+
 
         } catch (error) {
             setMessageColor('orangered');
@@ -47,6 +76,23 @@ function Signin() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const checkTokenExpiration = () => {
+            if (isTokenExpired()) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userDetails');
+                localStorage.removeItem('tokenExpiration');
+                alert('Your session has expired. Please log in again.');
+                navigate('/signin');
+            }
+        };
+
+        const intervalId = setInterval(checkTokenExpiration, 1000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
 
     return (
         <div className='w-full lg:w-[404px] m-auto'>

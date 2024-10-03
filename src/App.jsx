@@ -22,6 +22,8 @@ import Index from "@/Components/public/index"
 import Signin from './Components/public/Signin';
 import Signup from './Components/public/Signup';
 import ForgotPassword from './Components/public/ForgotPassword';
+import AuthRoute from './Components/private/AuthRoute';
+import ProtectedRoute from './Components/private/ProtectedRoute';
 
 function App() {
   const location = useLocation();
@@ -51,9 +53,9 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<LayoutWithHeader />}>
+      <Route path="/" element={<ProtectedRoute><LayoutWithHeader /></ProtectedRoute>}>
         <Route path="/profile">
-          <Route path="support" element={<Support />} />
+        <Route path="support" element={<Support />} />
           <Route path="wallet" element={<Section />} />
           <Route path="deposit" element={<Deposit />} />
           <Route path="withdraw" element={<Withdraw />} />
@@ -72,9 +74,9 @@ function App() {
         <Route path="/trading" element={<SpotTrading />} />
       </Route>
       <Route path='/' element={<Index />}>
-        <Route path="signin" element={<Signin />} />
-        <Route path="signup" element={<Signup />} />
-        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="signin" element={<AuthRoute><Signin /></AuthRoute>} />
+        <Route path="signup" element={<AuthRoute><Signup /></AuthRoute>} />
+        <Route path="forgot-password" element={<AuthRoute><ForgotPassword /></AuthRoute>} />
       </Route>
     </Routes>
   );

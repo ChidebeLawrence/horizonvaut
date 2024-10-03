@@ -31,6 +31,9 @@ function AccountSettings() {
 
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [otp, setOtp] = useState('');
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpLoading, setOtpLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [messageColor, setMessageColor] = useState('');
     const [loading, setLoading] = useState(false);
@@ -39,13 +42,201 @@ function AccountSettings() {
         return password.length >= 8;
     };
 
+    // const handleChangePassword = async (e) => {
+    //     e.preventDefault();
+    //     if (!validatePassword(newPassword)) {
+    //         setMessage("Password must be at least 8 characters long.");
+    //         setMessageColor('orange');
+    //         return;
+    //     }
+    //     if (newPassword !== confirmPassword) {
+    //         setMessage("Passwords do not match!");
+    //         setMessageColor('orange');
+    //         return;
+    //     }
+
+    //     setLoading(true);
+    //     const token = localStorage.getItem('authToken');
+
+    //     try {
+    //         const response = await axios.post('https://api.horizonvaut.com/auth/update-password', {
+    //             method: "POST",
+    //             "Authorization": `Bearer ${token}`,
+    //             new_password: newPassword
+    //         });
+
+    //         if (response.data.success) {
+    //             setMessageColor('limegreen');
+    //             setMessage("Password changed successfully!");
+    //             setNewPassword('');
+    //             setConfirmPassword('');
+    //             setTimeout(() => setMessage(''), 3000);
+    //         } else {
+    //             setMessageColor('orangered');
+    //             setMessage("An error occurred. Please try again.");
+    //         }
+
+    //         console.log(response.data);
+
+    //     } catch (error) {
+    //         setMessageColor('orangered');
+    //         setMessage("An error occurred. Please try again.");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+    // const handleChangePassword = async (e) => {
+    //     e.preventDefault();
+    //     if (!validatePassword(newPassword)) {
+    //         setMessage("Password must be at least 8 characters long.");
+    //         setMessageColor('orange');
+    //         return;
+    //     }
+    //     if (newPassword !== confirmPassword) {
+    //         setMessage("Passwords do not match!");
+    //         setMessageColor('orange');
+    //         return;
+    //     }
+
+    //     setLoading(true);
+    //     const token = localStorage.getItem('authToken');
+
+    //     try {
+    //         const response = await fetch('https://api.horizonvaut.com/auth/update-password', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 new_password: newPassword
+    //             })
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (response.ok && data.success) {
+    //             setMessageColor('limegreen');
+    //             setMessage("Password changed successfully!");
+    //             setNewPassword('');
+    //             setConfirmPassword('');
+    //             setTimeout(() => setMessage(''), 3000);
+    //         } else {
+    //             setMessageColor('orangered');
+    //             setMessage(data.message || "An error occurred. Please try again.");
+    //         }
+
+    //         console.log(data);
+
+    //     } catch (error) {
+    //         setMessageColor('orangered');
+    //         setMessage("An error occurred. Please try again.");
+    //         console.error(error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+    // const handleChangePassword = async (e) => {
+    //     e.preventDefault();
+
+    //     if (newPassword.length < 8) {
+    //         setMessage("Password must be at least 8 characters long.");
+    //         setMessageColor('orange');
+    //         return;
+    //     }
+    //     if (newPassword !== confirmPassword) {
+    //         setMessage("Passwords do not match!");
+    //         setMessageColor('orange');
+    //         return;
+    //     }
+
+    //     setLoading(true);
+    //     const token = localStorage.getItem('authToken');
+    //     const email = localStorage.getItem('userEmail');
+
+    //     try {
+    //         if (!token) {
+    //             throw new Error("No authentication token found");
+    //         }
+
+    //         // Send request to update password
+    //         const response = await fetch('https://api.horizonvaut.com/auth/update-password', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 email: email,       // Include email
+    //                 password: newPassword, // New password
+    //                 otp: otp             // Include OTP (if required)
+    //             })
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (response.ok && data.success) {
+    //             setMessageColor('limegreen');
+    //             setMessage("Password changed successfully!");
+    //             setNewPassword('');  // Clear password input
+    //             setConfirmPassword(''); // Clear confirm password input
+    //         } else {
+    //             setMessageColor('orangered');
+    //             setMessage(data.message || "An error occurred. Please try again.");
+    //         }
+    //     } catch (error) {
+    //         setMessageColor('orangered');
+    //         setMessage(error.message || "An error occurred. Please try again.");
+    //     } finally {
+    //         setLoading(false); // Stop loading
+    //     }
+    // };
+
+    const handleSendOtp = async () => {
+        setOtpLoading(true);
+        const email = localStorage.getItem('userEmail'); // Assuming email is stored in localStorage
+
+        try {
+            const response = await fetch('https://api.horizonvaut.com/auth/send-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email, // Send the email in the body to trigger OTP
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                setOtpSent(true); // OTP sent successfully
+                setMessageColor('limegreen');
+                setMessage('OTP sent to your email.');
+            } else {
+                setMessageColor('orangered');
+                setMessage(data.message || "Failed to send OTP. Please try again.");
+            }
+        } catch (error) {
+            setMessageColor('orangered');
+            setMessage(error.message || "An error occurred. Please try again.");
+        } finally {
+            setOtpLoading(false); // Stop OTP loading
+        }
+    };
+
+    // Function to change the password
     const handleChangePassword = async (e) => {
         e.preventDefault();
+
         if (!validatePassword(newPassword)) {
             setMessage("Password must be at least 8 characters long.");
             setMessageColor('orange');
             return;
         }
+
         if (newPassword !== confirmPassword) {
             setMessage("Passwords do not match!");
             setMessageColor('orange');
@@ -53,40 +244,52 @@ function AccountSettings() {
         }
 
         setLoading(true);
-        try {
-            const response = await axios.post('https://api.horizonvaut.com/auth/update-password', {
-                new_password: newPassword
-            });
+        const token = localStorage.getItem('authToken');
+        const email = localStorage.getItem('userEmail');
 
-            if (response.data.success) {
-                setMessageColor('limegreen');
-                setMessage("Password changed successfully!");
-                setNewPassword('');
-                setConfirmPassword('');
-                setTimeout(() => setMessage(''), 3000);
-            } else {
-                setMessageColor('orangered');
-                setMessage("An error occurred. Please try again.");
+        try {
+            if (!token) {
+                throw new Error("No authentication token found");
             }
 
-            console.log(response.data);
+            const response = await fetch('https://api.horizonvaut.com/auth/update-password', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: newPassword,
+                    otp: otp, // Send the OTP with the request
+                }),
+            });
 
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                setMessageColor('limegreen');
+                setMessage("Password changed successfully!");
+                setNewPassword('');  // Clear password input
+                setConfirmPassword(''); // Clear confirm password input
+            } else {
+                setMessageColor('orangered');
+                setMessage(data.message || "An error occurred. Please try again.");
+            }
         } catch (error) {
             setMessageColor('orangered');
-            setMessage("An error occurred. Please try again.");
+            setMessage(error.message || "An error occurred. Please try again.");
         } finally {
             setLoading(false);
         }
     };
-
     return (
         <div className='mb-[15rem]'>
             <SubHeaderTwo icon={icon} header="Account password" content="Login password is used to log in to your account" />
             <Index />
             <div className={classNames(
                 'bg-white text-[#78778B] m-[20px] py-4 px-[40px] flex flex-col gap-[20px] rounded-md',
-                "smLg:flex-row",
-                'text-[#78778B] lg:mx-[55px] lg:mb-[50px] lg:py-6 lg:px-[40px] lg:flex-row lg:items-start lg:justify-between',
+                'text-[#78778B] lg:mx-[55px] lg:mb-[50px] lg:py-6 lg:px-[40px] lg: lg:items-start lg:justify-between',
             )}>
                 <div className='flex items-center gap-[20px] smLg:w-[50%] lg:w-full lg:w-[50%]'>
                     <p>{security}</p>
@@ -96,9 +299,9 @@ function AccountSettings() {
                     </div>
                 </div>
 
-                <div className='smLg:w-[50%] flex-col lg:w-[65%] flex justify-between gap-[16px]'>
-                    <form onSubmit={handleChangePassword} className='flex justify-between gap-[16px]'>
-                        <p className='relative w-full lg:w-1/3'>
+                <div className='smLg:w-full flex-col lg:w-full flex justify-between gap-[16px]'>
+                    <form onSubmit={handleChangePassword} className='flex flex-col gap-4 justify-between gap-[16px] w-full'>
+                        <p className='relative w-full'>
                             <input
                                 type='password'
                                 placeholder='Enter new password'
@@ -109,8 +312,8 @@ function AccountSettings() {
                             />
                             <p className='absolute top-[10px] left-[8px]'>{lock}</p>
                         </p>
-                        
-                        <p className='relative w-full lg:w-1/3'>
+
+                        <p className='relative w-full'>
                             <input
                                 type='password'
                                 placeholder='Repeat new password'
@@ -121,9 +324,26 @@ function AccountSettings() {
                             />
                         </p>
 
+                        <p className='relative w-full'>
+                            <input
+                                type="text"
+                                placeholder="OTP"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                className='w-full py-[13px] pl-[35px] pr-[20px] focus:outline-[#825fe9] border border-[#e5e8eb] rounded-md text-black'
+                                required
+                            />
+                        </p>
+
+                        {!otpSent && (
+                            <button type="button" onClick={handleSendOtp} disabled={otpLoading}>
+                                {otpLoading ? 'Sending OTP...' : 'Send OTP'}
+                            </button>
+                        )}
+
                         <button
-                            className={`w-full py-[14px] lg:w-1/3 bg-[#825fe9] text-white text-[14px] rounded-md flex items-center justify-center gap-[5px] ${loading ? 'opacity-50 cursor-default' : ''}`}
-                            disabled={loading}
+                            className={`w-full py-[14px] bg-[#825fe9] text-white text-[14px] rounded-md flex items-center justify-center gap-[5px] ${loading ? 'opacity-50 cursor-default' : ''}`}
+                            disabled={loading || !otpSent}
                         >
                             {loading ? (
                                 <div className='flex justify-center items-center gap-[7px]'>
@@ -134,6 +354,10 @@ function AccountSettings() {
                                 "Change password"
                             )}
                         </button>
+
+                        {/* <button type="submit" disabled={loading || !otpSent}>
+                            Change Password
+                        </button> */}
                     </form>
                     {message && <p style={{ color: messageColor }}>{message}</p>}
                 </div>

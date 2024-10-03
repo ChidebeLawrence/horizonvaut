@@ -1,35 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import SubHeader from '@/Utilities/SubHeader'
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Info from '@/assets/images/info.svg'
 import Img from '@/assets/images/btc.png'
 import Empty from '@/assets/images/empty.svg'
 import { ClipLoader } from 'react-spinners';
+import { fetchWalletBalances } from '@/redux/actions';
 
 function Transfer() {
     const coins = useSelector((state) => state.coins)
     const depositCoin = coins.filter((coin) => coin.Deposit)
 
-
+    const dispatch = useDispatch();
+    const listCoin = useSelector((state) => state.coins);
     const [balanceMessage, setBalanceMessage] = useState("");
     const [balance, setBalance] = useState({
         balance: 0,
         wallet_name: "BTC"
     });
+    const [loading, setLoading] = useState(true);
     const [reciver, setReciver] = useState("");
     const [amount, setAmount] = useState("");
     const [transferMessage, setTransferMessage] = useState('');
     const [messageColor, setMessageColor] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [selectOption, setSelectOption] = useState(false)
-    const [selectedCoin, setSelectedCoin] = useState({
-        Coin: "Bitcoin",
-        Abbr: "BTC",
-        Image: Img,
-        Alt: "btc"
-    });
-    const popularCoins = ["USDT", "BTC", "TRX", "ETH", "USDC", "XRP", "LTC"]
+    const [selectedCoin, setSelectedCoin] = useState({});
+    const popularCoins = ["Tether", "Bitcoin", "Tron", "Ethereum", "USD Coin", "Dogecoin", "Litecoin"]
+
     const handleSelectedCoin = (coin) => {
         setSelectedCoin(coin)
         setSelectOption(false)
@@ -38,26 +37,26 @@ function Transfer() {
         setSelectOption(!selectOption)
     }
 
-    const tableData = [
-        // {
-        //     Transfer_ID: "528968178", Date: "14-09-2024", User: "lawrencechidebe", User_email: "lawrencechidebe@gmail.com", Amount: 500, Status: "Success"
-        // },
-    ]
-
     const wallet_overview = <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
         <line x1="52.4746" y1="8.35617" x2="31.3562" y2="38.5254" stroke="#47DEFF" strokeWidth="12" strokeLinecap="round"></line>
         <line x1="29.4746" y1="8.35617" x2="8.35616" y2="38.5254" stroke="#7044EE" strokeWidth="12" strokeLinecap="round"></line>
     </svg>
 
+    useEffect(() => {
+        return () => {
+            handleBalance()
+        };
+    }, []);
+
     const handleTransfer = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setIsLoading(true);
         setTransferMessage('');
 
         if (isNaN(amount) || amount <= 4) {
             setTransferMessage('Minimum transfer is 5 USD.');
-            setMessageColor('orangered'); // Set message color to red for error
-            setLoading(false);
+            setMessageColor('orangered');
+            setIsLoading(false);
             return;
         }
 
@@ -72,7 +71,7 @@ function Transfer() {
         if (!token) {
             setTransferMessage('You must be logged in to transfer.');
             setMessageColor('orangered');
-            setLoading(false);
+            setIsLoading(false);
             return;
         }
 
@@ -85,6 +84,9 @@ function Transfer() {
                 },
                 body: JSON.stringify(transferData),
             });
+
+            console.log("result: ", response);
+
 
             if (response.ok) {
                 const result = await response.json();
@@ -115,15 +117,9 @@ function Transfer() {
             }
             setMessageColor('orangered');
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     }
-
-    useEffect(() => {
-        return () => {
-            handleBalance()
-        };
-    }, []);
 
     const handleBalance = async () => {
         const token = localStorage.getItem('authToken');
@@ -131,7 +127,7 @@ function Transfer() {
         if (!token) {
             setBalanceMessage('You must be logged in to view your balance.');
             setMessageColor('orangered');
-            setLoading(false);
+            setIsLoading(false);
             return;
         }
 
@@ -146,8 +142,7 @@ function Transfer() {
 
             if (response.ok) {
                 const result = await response.json();
-                console.log('Fetched Balance:', result.data); // Log the result to inspect it
-                setBalance(result.data); // Ensure result.data is an array
+                setBalance(result.data);
                 setBalanceMessage('Balance fetched successfully!');
                 setMessageColor('limegreen');
             } else {
@@ -159,9 +154,28 @@ function Transfer() {
             setBalanceMessage('An error occurred. Please try again.');
             setMessageColor('orangered');
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            await dispatch(fetchWalletBalances());
+            setIsLoading(false);
+        };
+
+        fetchData();
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (coins.length > 0) {
+            setSelectedCoin({
+                Coin: coins[0].Coin,
+                Image: coins[0].Image || '',
+            })
+        }
+    }, [coins]);
 
     return (
         <>
@@ -179,40 +193,58 @@ function Transfer() {
 
                                 <div onClick={handleSelectOption} className='rounded-md cursor-pointer border border-[#dadada] flex items-center justify-between px-[1.5rem] py-[17px]'>
                                     <div className='flex items-center text-[#51535C]'>
-                                        <img src={selectedCoin.Image} alt={selectedCoin.Alt} className="h-6 w-6 mr-2" ></img>
+                                        {/* <img src={selectedCoin.Image} alt={selectedCoin.Alt} className="h-6 w-6 mr-2" ></img> */}
                                         <span className='mr-[3px]'>{selectedCoin.Coin}</span>
-                                        <span className='font-semibold'>{selectedCoin.Abbr}</span>
+                                        {/* <span className='font-semibold'>{selectedCoin.Abbr}</span> */}
                                     </div>
                                     <IoIosArrowDown />
                                 </div>
 
                                 <div className='relative z-10 shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)'>
-                                    {selectOption && (
-                                        <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>{depositCoin.map((coin, index) => (
-                                            (
-                                                depositCoin.map((coin, index) => (
-                                                    <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
-                                                        <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" />
-                                                        <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
-                                                        <p className='font-semibold'>{coin.Abbr}</p>
-                                                    </div>))
-                                            )
-                                        ))}
-                                        </div>
-                                    )}
+                                    {loading ?
+                                        (<ClipLoader size="20px" />)
+                                        :
+                                        selectOption && (
+                                            <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>{depositCoin.map((coin, index) => (
+                                                (
+                                                    listCoin.map((coin, index) => (
+                                                        <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
+                                                            {/* <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" /> */}
+                                                            <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
+                                                            {/* <p className='font-semibold'>{coin.Abbr}</p> */}
+                                                        </div>
+                                                    ))
+
+                                                )
+                                            ))}
+                                            </div>
+                                        )}
                                 </div>
 
                                 <p className='text-[12px] py-[10px]'>Popular coins:</p>
                                 <div className='flex flex-col gap-[15px]'>
                                     <div className='flex flex-wrap gap-[7px]'>
-                                        {popularCoins.map((abbr, index) => (
+                                        {/* {popularCoins.map((abbr, index) => (
                                             <p
                                                 key={index}
                                                 onClick={() => handleSelectedCoin(coins.find(coin => coin.Abbr === abbr))}
                                                 className={`bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[8px] py-[5px] text-[12px] text-[#404053] w-fit cursor-pointer text-center ${selectedCoin.Abbr === abbr ? 'border-[#7044ee]' : ''}`}>
                                                 {abbr}
                                             </p>
-                                        ))}
+                                        ))} */}
+
+                                        {popularCoins.map((coinName, index) => {
+                                            const selectedCoinData = coins.find(coin => coin.Coin === coinName);
+
+                                            return (
+                                                <p
+                                                    key={index}
+                                                    onClick={() => handleSelectedCoin(selectedCoinData)} // Pass the found coin to the handler
+                                                    className={`bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[8px] py-[5px] text-[12px] text-[#404053] w-fit cursor-pointer text-center ${selectedCoin && selectedCoin.Coin === selectedCoinData?.Coin ? 'border border-[royalblue]' : ''}`}>
+                                                    {coinName}
+                                                </p>
+                                            );
+                                        })}
 
                                     </div>
                                 </div>
@@ -268,10 +300,10 @@ function Transfer() {
 
                                 {transferMessage && <p style={{ color: messageColor }}>{transferMessage}</p>}
                                 <div>
-                                    <button type='submit' className={`bg-[#7044ee] text-white w-full py-[16px] rounded-md mt-[32px] hover:bg-[#825fe9]  ${loading ? 'opacity-50 cursor-default' : ''}`}>
-                                        {loading ?
+                                    <button type='submit' className={`bg-[#7044ee] text-white w-full py-[16px] rounded-md mt-[32px] hover:bg-[#825fe9]  ${isLoading ? 'opacity-50 cursor-default' : ''}`}>
+                                        {isLoading ?
                                             <div className='flex items-center justify-center gap-2'>
-                                                Processing... <ClipLoader color={"#ffffff"} loading={loading} size={20} />
+                                                Processing... <ClipLoader color={"#ffffff"} loading={isLoading} size={20} />
                                             </div>
                                             :
                                             'Submit Transfer'
@@ -299,66 +331,6 @@ function Transfer() {
                     </div>
                 </div>
             </div>
-
-            <div className='px-[1.5rem] mb-[45px] mr-[220px] mt-[34px] w-full md:px-[3.5rem]'>
-                <div className='h-[502px] bg-white overflow-auto rounded-md border border-[#dadada]'>
-                    <table className='w-full border-collapse border border-gray-300 table-fixed'>
-                        <thead>
-                            <tr className='bg-bgColourTwo text-left'>
-                                <th className='py-[2rem] pl-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[20%] min-w-[180px]'>
-                                    Transfer ID
-                                </th>
-                                <th className='py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]'>
-                                    Date
-                                </th>
-                                <th className='py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]'>
-                                    User email
-                                </th>
-                                <th className='py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]'>
-                                    Amount
-                                </th>
-                                <th className='py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]'>
-                                    Status
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody className='text-colorSix text-[14px] max-h-[100vh] relative'>
-                            {tableData.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5">
-                                        <div className='min-h-[393px] flex flex-col justify-center items-center'>
-                                            <img src={Empty} alt='empty' />
-                                            <p>No transfers found</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ) : (
-                                tableData.map((data, index) => (
-                                    <tr className='border-b border-gray-300' key={index}>
-                                        <td className='w-[20%] py-[1.2rem] pl-[2rem]'>
-                                            {data.Transfer_ID}
-                                        </td>
-                                        <td className='w-[17.5%] py-[1.2rem]'>
-                                            {data.Date}
-                                        </td>
-                                        <td className='w-[17.5%] py-[1.2rem]'>
-                                            {data.User_email}
-                                        </td>
-                                        <td className='w-[17.5%] py-[1.2rem]'>
-                                            ${data.Amount}
-                                        </td>
-                                        <td className='w-[17.5%] py-[1.2rem]'>
-                                            {data.Status}
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </>
     )
 }

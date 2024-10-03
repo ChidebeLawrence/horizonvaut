@@ -30,16 +30,18 @@ function History() {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`,
                 },
             });
 
             if (!response.ok) {
-                throw new Error("Network response was not ok " + response.statusText);
+                throw new Error("Please check network connection " + response.statusText);
             }
 
             const result = await response.json();
             const transactionData = result.data;
+            console.log(result);
+            
 
             const transactionList = transactionData.map((transaction) => ({
                 time: transaction.last_updated,
@@ -48,7 +50,8 @@ function History() {
                 amount: transaction.amount,
                 asset: transaction.coin.symbol.toUpperCase(),
                 status: capitalizeFirstLetter(transaction.status),
-                address: transaction.receiver.email,
+                address: transaction.receiver?.email || 'N/A',
+
             }));
 
             const sortedTransactions = transactionList.sort((a, b) => b.time - a.time);

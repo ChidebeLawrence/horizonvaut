@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Index from "./Index"
 import SubHeaderTwo from "@/Utilities/SubHeaderTwo"
 
@@ -12,6 +12,14 @@ function AccountSettings() {
         <path d="M19.8334 23.9168H8.16671C4.66671 23.9168 2.33337 22.1668 2.33337 18.0835V9.91683C2.33337 5.8335 4.66671 4.0835 8.16671 4.0835H19.8334C23.3334 4.0835 25.6667 5.8335 25.6667 9.91683V18.0835C25.6667 22.1668 23.3334 23.9168 19.8334 23.9168Z" stroke="#2A353D" strokeWidth="1.75" strokeMiterlimit="10" strokeMiterlimit="round" strokeLinejoin="round"></path>
         <path d="M19.8333 10.5L16.1816 13.4167C14.98 14.3733 13.0083 14.3733 11.8066 13.4167L8.16663 10.5" stroke="#2A353D" strokeWidth="1.75" strokeMiterlimit="10" strokeMiterlimit="round" strokeLinejoin="round"></path>
     </svg>
+
+    const [userEmail, setUserEmail] = useState(null);
+
+
+    useEffect(() => {
+        const storedUserDetails = JSON.parse(localStorage.getItem('userDetails'));
+        setUserEmail(storedUserDetails.email);
+    })
 
     return (
         <div className='mb-[15rem]'>
@@ -28,7 +36,7 @@ function AccountSettings() {
                         <p className="text-[12px]">Your current active email address</p>
                     </div>
                 </div>
-                <p className='bg-[#EAECEF] w-fit h-fit px-[50px] py-[15px] rounded-md'>chidebelawrence@gmail.com</p>
+                <p className='bg-[#EAECEF] w-fit h-fit px-[50px] py-[15px] rounded-md'>{userEmail}</p>
             </div>
         </div>
     )
