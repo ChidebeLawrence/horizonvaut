@@ -22,7 +22,7 @@ function History() {
     }, []);
 
     const fetchHistory = async () => {
-        setLoading(true)
+        setLoading(true);
 
         try {
             const token = localStorage.getItem('authToken');
@@ -40,28 +40,44 @@ function History() {
 
             const result = await response.json();
             const transactionData = result.data;
-            console.log(result);
-            
+            console.log(transactionData);
 
-            const transactionList = transactionData.map((transaction) => ({
-                time: transaction.last_updated,
-                formattedTime: new Date(transaction.last_updated * 1000).toLocaleDateString("en-US"), // Display in table
-                type: capitalizeFirstLetter(transaction.transaction_type),
-                amount: transaction.amount,
-                asset: transaction.coin.symbol.toUpperCase(),
-                status: capitalizeFirstLetter(transaction.status),
-                address: transaction.receiver?.email || 'N/A',
+            transactionData.forEach((transaction, index) => {
+                console.log(`Receiving Address for Transaction ${index + 1}:`, transaction.receiver_address);
+            });
 
-            }));
+            const transactionList = transactionData.map((transaction) => {
+                const formattedDate = new Date(transaction.last_updated * 1000).toLocaleDateString("en-US", {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
 
-            const sortedTransactions = transactionList.sort((a, b) => b.time - a.time);
+                return {
+                    time: formattedDate,
+                    lastUpdated: transaction.last_updated,
+                    type: capitalizeFirstLetter(transaction.transaction_type),
+                    amount: transaction.amount,
+                    asset: transaction.coin.symbol.toUpperCase(),
+                    status: capitalizeFirstLetter(transaction.status),
+                    address: transaction.receiver?.email || transaction.receiver_address,
+                    receiver_address: transaction.receiver_address || 'N/A',
+                };
+            });
+
+            const sortedTransactions = transactionList.sort((a, b) => b.lastUpdated - a.lastUpdated);
+
+            localStorage.setItem('transactionHistory', JSON.stringify(sortedTransactions));
+
+            console.log('Stored transaction history:', sortedTransactions);
+
             setTransaction(sortedTransactions);
-            setError("")
+            setError("");
 
         } catch (error) {
             setError(error.message);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
 
@@ -97,7 +113,7 @@ function History() {
                             </thead>
 
                             <tbody className='text-colorSix text-[14px] relative bg-white'>
-                                {loading ? (<div className='absolute left-[0px] z-5 right-[0] top-[0] bottom-[0] min-h-[393px] flex flex-col justify-center items-center'>
+                                {loading ? (<div className='m-4'>
                                     <ClipLoader loading={loading} size={40} cssOverride={{
                                         border: '5px solid #f3f3f3',
                                         borderTopColor: '#3498db',

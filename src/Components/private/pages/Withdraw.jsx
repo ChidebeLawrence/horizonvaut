@@ -18,6 +18,7 @@ function Withdraw() {
         balance: 0,
         wallet_name: "BTC"
     });
+    const [updateAmount, setUpdateAmount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [destinationAddress, setDestinationAddress] = useState('');
     const [amount, setAmount] = useState('');
@@ -41,7 +42,7 @@ function Withdraw() {
     }
     const [selectedNetwork, setSelectedNetwork] = useState({
         Coin: "Bitcoin",
-        Abbr: "BTC",
+        // Abbr: "BTC",
     });
 
     const handleSelectOption = () => {
@@ -63,7 +64,7 @@ function Withdraw() {
         const withdrawalData = {
             destination_address: destinationAddress,
             amount: parseFloat(amount),
-            network: selectedNetwork.Abbr,
+            network: selectedNetwork.Coin,
             source: selectedCoin.Coin,
         };
 
@@ -82,6 +83,8 @@ function Withdraw() {
             return;
         }
 
+        console.log("Withdrawal Data:", withdrawalData);
+
         try {
             const response = await fetch("https://api.horizonvaut.com/wallet/withdraw", {
                 method: 'POST',
@@ -92,20 +95,27 @@ function Withdraw() {
                 body: JSON.stringify(withdrawalData),
             });
 
-            const result = await response.json()
-            console.log(result)
+            const responseBody = await response.json();
+            console.log("Response Status:", response.status);
+            console.log("Response Body:", responseBody);
 
             if (response.ok) {
                 setWithdrawalMessage('Withdrawal successful!');
                 setMessageColor('limegreen');
+
+                setDestinationAddress('');
+                setAmount('');
+                setSelectedCoin({ Coin: '', Abbr: '' });
+                setSelectedNetwork({ Coin: '', Abbr: '' });
+
             } else {
-                const error = await response.json();
-                setWithdrawalMessage(error.message || 'Withdrawal failed. Please try again.');
+                setWithdrawalMessage(responseBody.message || 'Withdrawal failed. Please try again.');
                 setMessageColor('orangered');
             }
         } catch (error) {
+            console.error("Withdrawal error:", error);
             setMessageColor('orangered');
-            setMessage("An error occurred. Please try again.");
+            setWithdrawalMessage("An error occurred. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -128,6 +138,9 @@ function Withdraw() {
                     "Authorization": `Bearer ${token}`,
                 },
             });
+
+            console.log("Balance", response.data);
+
 
             if (response.ok) {
                 const result = await response.json();
@@ -152,7 +165,13 @@ function Withdraw() {
     }, []);
 
     useEffect(() => {
-        dispatch(fetchWalletBalances());
+        const fetchData = async () => {
+            setLoading(true);
+            await dispatch(fetchWalletBalances());
+            setLoading(false);
+        };
+
+        fetchData();
     }, [dispatch]);
 
     useEffect(() => {
@@ -188,20 +207,17 @@ function Withdraw() {
                                     <IoIosArrowDown />
                                 </div>
                                 <div className='relative z-10 shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)'>
-                                    {loading ?
-                                        (<ClipLoader size="20px" />)
-                                        :
-                                        (selectOption && (
-                                            <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
-                                                {coins.map((coin, index) => (
-                                                    <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
-                                                        <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" />
-                                                        <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
-                                                        <p className='font-semibold'>{coin.Abbr}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ))
+                                    {loading ? (<ClipLoader size="20px" />) : selectOption && (
+                                        <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
+                                            {coins.map((coin, index) => (
+                                                <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
+                                                    {/* <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" /> */}
+                                                    <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
+                                                    {/* <p className='font-semibold'>{coin.Abbr}</p> */}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )
                                     }
                                 </div>
 
@@ -284,16 +300,15 @@ function Withdraw() {
                                     />
                                     <div className='absolute right-[20px] py-[16px] flex gap-[20px] top-[15px]'>
                                         <p className='px-[1rem] cursor-pointer text-[#7044ee]'>All</p>
-                                        <p className='mt-[-10px] mb-[-10px] border border-r-[#dadada]'></p>
-                                        <p className='px-[1rem]'>{selectedNetwork.Abbr}</p>
+                                        <p className='px-[1rem] border-l border-l-[#dadada]'>{selectedCoin.Coin}</p>
                                     </div>
                                 </div>
 
                                 {Array.isArray(balance) && balance
                                     .filter((coin) => coin.wallet_name === selectedCoin.Coin)
                                     .map((coin, index) => (<div key={index} className='flex justify-between text-[12px] mt-[3px]'>
-                                        <p>Available: {coin.balance.toFixed(6)} {coin.wallet_name}</p>
-                                        <p>Fee: 0 {coin.wallet_name}</p>
+                                        <p className='flex items-center gap-2'>Available: {loading ? <ClipLoader size="15px" /> : <>{coin.balance.toFixed(6)} {coin.wallet_name}</>}</p>
+                                        {/* <p>Fee: 0 {coin.wallet_name}</p> */}
                                     </div>
                                     ))}
 

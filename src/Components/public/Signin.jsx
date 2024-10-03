@@ -77,21 +77,21 @@ function Signin() {
         }
     };
 
-    useEffect(() => {
-        const checkTokenExpiration = () => {
-            if (isTokenExpired()) {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userDetails');
-                localStorage.removeItem('tokenExpiration');
-                alert('Your session has expired. Please log in again.');
-                navigate('/signin');
-            }
-        };
+    // useEffect(() => {
+    //     const checkTokenExpiration = () => {
+    //         if (isTokenExpired()) {
+    //             localStorage.removeItem('authToken');
+    //             localStorage.removeItem('userDetails');
+    //             localStorage.removeItem('tokenExpiration');
+    //             alert('Your session has expired. Please log in again.');
+    //             navigate('/signin');
+    //         }
+    //     };
 
-        const intervalId = setInterval(checkTokenExpiration, 1000);
+    //     const intervalId = setInterval(checkTokenExpiration, 1000);
 
-        return () => clearInterval(intervalId);
-    }, []);
+    //     return () => clearInterval(intervalId);
+    // }, []);
 
 
     return (

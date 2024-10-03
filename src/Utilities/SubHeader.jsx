@@ -12,7 +12,7 @@ function SubHeader({ sub_header_icon, header, content, onClick }) {
     const StyleLinkHeader =
         "bg-bgColourOne px-[10px] py-[6px] rounded-md flex items-center justify-center hover:bg-colorTwo text-white flex-col smSm:flex-row lg:px-[26px] lg:py-3 lg:flex-row lg:gap-[10px] md:px-[26px] md:py- smLg:flex-row";
 
-    const activeClass = "bg-[blueviolet] text-white";
+    const activeClass = "bg-[royalblue] text-white";
     const isActive = (path) => (location.pathname === path ? activeClass : "");
 
     return (

@@ -85,9 +85,6 @@ function Transfer() {
                 body: JSON.stringify(transferData),
             });
 
-            console.log("result: ", response);
-
-
             if (response.ok) {
                 const result = await response.json();
                 setTransferMessage('Transfer successful!');
@@ -121,6 +118,15 @@ function Transfer() {
         }
     }
 
+    const handleAllClick = () => {
+        if (selectedCoin && balance > 0) {
+            setAmount(balance.toString());
+        } else {
+            setBalanceMessage('No balance available for the selected coin.');
+            setMessageColor('orangered');
+        }
+    };
+
     const handleBalance = async () => {
         const token = localStorage.getItem('authToken');
 
@@ -142,7 +148,10 @@ function Transfer() {
 
             if (response.ok) {
                 const result = await response.json();
-                setBalance(result.data);
+                const coinBalance = result.data.find(coin => coin.Coin === selectedCoin.Coin);
+                if (coinBalance) {
+                    setBalance(coinBalance.balance);
+                }
                 setBalanceMessage('Balance fetched successfully!');
                 setMessageColor('limegreen');
             } else {
@@ -160,9 +169,9 @@ function Transfer() {
 
     useEffect(() => {
         const fetchData = async () => {
-            setIsLoading(true);
+            setLoading(true);
             await dispatch(fetchWalletBalances());
-            setIsLoading(false);
+            setLoading(false);
         };
 
         fetchData();
@@ -205,18 +214,14 @@ function Transfer() {
                                         (<ClipLoader size="20px" />)
                                         :
                                         selectOption && (
-                                            <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>{depositCoin.map((coin, index) => (
-                                                (
-                                                    listCoin.map((coin, index) => (
-                                                        <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
-                                                            {/* <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" /> */}
-                                                            <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
-                                                            {/* <p className='font-semibold'>{coin.Abbr}</p> */}
-                                                        </div>
-                                                    ))
-
-                                                )
-                                            ))}
+                                            <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
+                                                {listCoin.map((coin, index) => (
+                                                    <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
+                                                        {/* <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" /> */}
+                                                        <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
+                                                        {/* <p className='font-semibold'>{coin.Abbr}</p> */}
+                                                    </div>
+                                                ))}
                                             </div>
                                         )}
                                 </div>
@@ -224,15 +229,6 @@ function Transfer() {
                                 <p className='text-[12px] py-[10px]'>Popular coins:</p>
                                 <div className='flex flex-col gap-[15px]'>
                                     <div className='flex flex-wrap gap-[7px]'>
-                                        {/* {popularCoins.map((abbr, index) => (
-                                            <p
-                                                key={index}
-                                                onClick={() => handleSelectedCoin(coins.find(coin => coin.Abbr === abbr))}
-                                                className={`bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[8px] py-[5px] text-[12px] text-[#404053] w-fit cursor-pointer text-center ${selectedCoin.Abbr === abbr ? 'border-[#7044ee]' : ''}`}>
-                                                {abbr}
-                                            </p>
-                                        ))} */}
-
                                         {popularCoins.map((coinName, index) => {
                                             const selectedCoinData = coins.find(coin => coin.Coin === coinName);
 
@@ -283,18 +279,17 @@ function Transfer() {
                                         required
                                     />
                                     <div className='absolute right-[20px] py-[16px] flex gap-[20px]'>
-                                        <p className='px-[1rem] cursor-pointer text-[#7044ee]'>All</p>
-                                        <p className='mt-[-10px] mb-[-10px] border border-r-[#dadada]'></p>
-                                        <p className='px-[1rem]'>{selectedCoin.Abbr}</p>
+                                        <p className='px-[1rem] cursor-pointer text-[#7044ee]' onClick={handleAllClick}>All</p>
+                                        <p className='px-[1rem] border-l border-l-[#dadada]'>{selectedCoin.Coin}</p>
                                     </div>
                                 </div>
 
                                 {Array.isArray(balance) && balance
                                     .filter((coin) => coin.wallet_name === selectedCoin.Coin)
                                     .map((coin, index) => (
-                                        <div key={index} className='flex justify-between text-[12px] mt-[3px]'>
-                                            <p>Available: {coin.balance.toFixed(6)} {coin.wallet_name}</p>
-                                            <p>Fee: 0 {coin.wallet_name}</p>
+                                        <div key={index} className='flex justify-between items-center text-[12px] mt-[3px]'>
+                                            <p className='flex items-center gap-2'>Available: {loading ? <ClipLoader size="15px" /> : <>{coin.balance.toFixed(6)} {coin.wallet_name}</>}</p>
+                                            {/* <p>Fee: 0 {coin.wallet_name}</p> */}
                                         </div>
                                     ))}
 

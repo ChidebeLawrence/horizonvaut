@@ -237,7 +237,7 @@ function Deposite() {
                                                 type="text"
                                                 value={inputValue}
                                                 onChange={handleChange}
-                                                className='rounded-tl-md rounded-bl-md border border-[#dadada] w-[395px] px-[14px] py-[15px] text-center focus:outline-none'
+                                                className='rounded-tl-md rounded-bl-md border border-[#dadada] w-full px-[14px] py-[15px] text-center focus:outline-none'
                                                 disabled={true}
                                             />
 
@@ -260,9 +260,9 @@ function Deposite() {
                                             {showCode ? <IoIosArrowDown /> : <IoIosArrowUp />}
                                         </p>
 
-                                        {inputValue && (
+                                        {showCode && (inputValue && (
                                             <QRCode value={inputValue} size={size} />
-                                        )}
+                                        ))}
                                     </div>
                                 )}
                             </div>
