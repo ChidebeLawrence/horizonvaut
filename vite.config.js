@@ -18,8 +18,6 @@ export default defineConfig({
     setupFiles: ["./src/setupTests.js"],
   },
   server: {
-    // host: "192.168.56.1",
-    // port: 3000,
     host: '0.0.0.0',  // Listen on all interfaces
     port: 5173,
     proxy: {
