@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import "@/App.css";
 import LayoutWithHeader from '@/Components/LayoutWithHeader';
 import Section from '@/Components/private/Section';
@@ -19,14 +19,33 @@ import Promo from '@/Components/private/settings/Promo';
 import UpgardeVerification from '@/Components/private/settings/UpgardeVerification';
 import CardWithdrawal from '@/Components/private/pages/CardWithdrawal';
 import Index from "@/Components/public/index"
-import Signin from './Components/public/Signin';
-import Signup from './Components/public/Signup';
-import ForgotPassword from './Components/public/ForgotPassword';
-import AuthRoute from './Components/private/AuthRoute';
-import ProtectedRoute from './Components/private/ProtectedRoute';
+import Signin from '@/Components/public/Signin';
+import Signup from '@/Components/public/Signup';
+import ForgotPassword from '@/Components/public/ForgotPassword';
+import AuthRoute from '@/Components/private/AuthRoute';
+import ProtectedRoute from '@/Components/private/ProtectedRoute';
+import Home from "@/Components/public/Home"
+import useTokenExpiration from './Components/useTokenExpiration';
 
 function App() {
   const location = useLocation();
+  useTokenExpiration()
+  
+  useEffect(() => {
+        const checkTokenExpiration = () => {
+            if (isTokenExpired()) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userDetails');
+                localStorage.removeItem('tokenExpiration');
+                alert('Your session has expired. Please log in again.');
+                navigate('/signin');
+            }
+        };
+
+        const intervalId = setInterval(checkTokenExpiration, 1000);
+
+        return () => clearInterval(intervalId);
+    }, []);
 
   useEffect(() => {
     const titles = {
@@ -55,7 +74,7 @@ function App() {
     <Routes>
       <Route path="/" element={<ProtectedRoute><LayoutWithHeader /></ProtectedRoute>}>
         <Route path="/profile">
-        <Route path="support" element={<Support />} />
+          <Route path="support" element={<Support />} />
           <Route path="wallet" element={<Section />} />
           <Route path="deposit" element={<Deposit />} />
           <Route path="withdraw" element={<Withdraw />} />
@@ -73,6 +92,8 @@ function App() {
         </Route>
         <Route path="/trading" element={<SpotTrading />} />
       </Route>
+      <Route path="/" index element={<Home element={<Navigate to="/home" replace />} />} />
+      <Route path="/home" index element={<Home />} />
       <Route path='/' element={<Index />}>
         <Route path="signin" element={<AuthRoute><Signin /></AuthRoute>} />
         <Route path="signup" element={<AuthRoute><Signup /></AuthRoute>} />

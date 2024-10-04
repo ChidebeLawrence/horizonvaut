@@ -34,6 +34,10 @@ module.exports = {
         borderColourOne: "#373737",
       },
 
+      backgroundImage: {
+        'custom-gradient': 'linear-gradient(90deg, #5717C7, #FF4EB8)',
+      },
+
       width: {
         inherit: "inherit",
       },
@@ -68,7 +72,9 @@ module.exports = {
         smSm: "400px", // Small mobile (phones)
         smLg: "500px", // Small mobile (phones)
         md: "600px", // Tablets
+        mdSm: "700px", // Tablets
         mdLg: "850px", // Tablets
+        lgSm: "1000px", // Tablets
         lg: "1024px", // Small desktops and laptops
         Xlg: "1171px", // Small desktops and laptops
       },

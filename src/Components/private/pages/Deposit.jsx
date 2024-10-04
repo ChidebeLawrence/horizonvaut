@@ -267,7 +267,7 @@ function Deposite() {
                                 )}
                             </div>
                         </div>
-                        <p className='flex flex-wrap items-center lg:justify-center gap-[12px] bg-[#F8FAFC] py-[20px] px-[30px] border border-t-[#dadada] rounded-b-md'>
+                        <p className='flex flex-wrap lg:flex-nowrap items-center lg:justify-center gap-[12px] bg-[#F8FAFC] py-[20px] px-[30px] border border-t-[#dadada] rounded-b-md'>
                             <img src={Info} alt='info' />
                             Transaction confirmation times vary across blockchain networks, usually taking less than 5 minutes, depending on network load.
                         </p>

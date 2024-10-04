@@ -180,7 +180,7 @@ function Signup() {
 
   return (
     <div className='w-full lg:w-[404px] m-auto'>
-      <Link to="#" className="w-fit flex items-center gap-10 py-[12px]">
+      <Link to="/" className="w-fit flex items-center gap-10 py-[12px]">
         <img src={Bomiblogo} alt='bomib.com_logo.png' className="object-cover h-[30px] w-[30px]" />
         <h1 className='font-bold text-xLarge block block'>BOMIB</h1>
       </Link>

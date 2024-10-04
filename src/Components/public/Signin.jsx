@@ -96,7 +96,7 @@ function Signin() {
 
     return (
         <div className='w-full lg:w-[404px] m-auto'>
-            <Link to="#" className="sm:w-fit sm:flex sm:items-center sm:gap-10 sm:py-[12px]">
+            <Link to="/" className="sm:w-fit sm:flex sm:items-center sm:gap-10 sm:py-[12px]">
                 <img src={Bomiblogo} alt='bomib.com_logo' className="sm:object-cover sm:h-[30px] sm:w-[30px]" />
                 <h1 className='sm:font-bold sm:text-xLarge'>BOMIB</h1>
             </Link>

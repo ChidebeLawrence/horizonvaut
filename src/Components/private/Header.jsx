@@ -73,14 +73,14 @@ function Header() {
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    setTimeout(() => {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userDetails');
-      localStorage.removeItem('tokenExpiration');
-      navigate('/signin');
-    }, 500);
-  };
+  // const handleLogout = () => {
+  //   setTimeout(() => {
+  //     localStorage.removeItem('authToken');
+  //     localStorage.removeItem('userDetails');
+  //     localStorage.removeItem('tokenExpiration');
+  //     navigate('/signin');
+  //   }, 500);
+  // };
 
   useEffect(() => {
     const storedUserDetails = JSON.parse(localStorage.getItem('userDetails'));
@@ -121,7 +121,7 @@ function Header() {
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
 
       <div>
-        <Link to="#" className="flex items-center gap-10 py-[12px]">
+        <Link to="/" className="flex items-center gap-10 py-[12px]">
           <img src={Bomiblogo} alt='bomib.com_logo.png' className="object-cover h-[30px] w-[30px]" />
           <h1 className='font-bold text-xLarge block block'>BOMIB</h1>
         </Link>
