@@ -42,12 +42,6 @@ function Transfer() {
         <line x1="29.4746" y1="8.35617" x2="8.35616" y2="38.5254" stroke="#7044EE" strokeWidth="12" strokeLinecap="round"></line>
     </svg>
 
-    useEffect(() => {
-        return () => {
-            handleBalance()
-        };
-    }, []);
-
     const handleTransfer = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -118,20 +112,10 @@ function Transfer() {
         }
     }
 
-    const handleAllClick = () => {
-        if (selectedCoin && balance > 0) {
-            setAmount(balance.toString());
-        } else {
-            setBalanceMessage('No balance available for the selected coin.');
-            setMessageColor('orangered');
-        }
-    };
-
     const handleBalance = async () => {
         const token = localStorage.getItem('authToken');
 
         if (!token) {
-            setBalanceMessage('You must be logged in to view your balance.');
             setMessageColor('orangered');
             setIsLoading(false);
             return;
@@ -148,24 +132,24 @@ function Transfer() {
 
             if (response.ok) {
                 const result = await response.json();
-                const coinBalance = result.data.find(coin => coin.Coin === selectedCoin.Coin);
-                if (coinBalance) {
-                    setBalance(coinBalance.balance);
-                }
-                setBalanceMessage('Balance fetched successfully!');
+                setBalance(result.data);
                 setMessageColor('limegreen');
             } else {
                 const error = await response.json();
-                setBalanceMessage(error.message || 'Failed to fetch balance. Please try again.');
                 setMessageColor('orangered');
             }
         } catch (error) {
-            setBalanceMessage('An error occurred. Please try again.');
             setMessageColor('orangered');
         } finally {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        return () => {
+            handleBalance()
+        };
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -182,9 +166,18 @@ function Transfer() {
             setSelectedCoin({
                 Coin: coins[0].Coin,
                 Image: coins[0].Image || '',
+                Balance: coins[0].Total
             })
         }
     }, [coins]);
+
+    const handleSelectAll = () => {
+        if (selectedCoin && selectedCoin.Total > 0) {
+            setAmount(selectedCoin.Total);
+        } else {
+            setAmount("0")
+        }
+    };
 
     return (
         <>
@@ -279,19 +272,27 @@ function Transfer() {
                                         required
                                     />
                                     <div className='absolute right-[20px] py-[16px] flex gap-[20px]'>
-                                        <p className='px-[1rem] cursor-pointer text-[#7044ee]' onClick={handleAllClick}>All</p>
+                                        <p className='px-[1rem] cursor-pointer text-[#7044ee]' onClick={handleSelectAll}>All</p>
                                         <p className='px-[1rem] border-l border-l-[#dadada]'>{selectedCoin.Coin}</p>
                                     </div>
                                 </div>
 
-                                {Array.isArray(balance) && balance
-                                    .filter((coin) => coin.wallet_name === selectedCoin.Coin)
-                                    .map((coin, index) => (
-                                        <div key={index} className='flex justify-between items-center text-[12px] mt-[3px]'>
-                                            <p className='flex items-center gap-2'>Available: {loading ? <ClipLoader size="15px" /> : <>{coin.balance.toFixed(6)} {coin.wallet_name}</>}</p>
-                                            {/* <p>Fee: 0 {coin.wallet_name}</p> */}
-                                        </div>
-                                    ))}
+                                <div className='items-center text-[12px] mt-[3px]'>
+                                    <p className='flex items-center gap-2'>Available:
+                                        {Array.isArray(balance) && balance
+                                            .filter((coin) => coin.wallet_name === selectedCoin.Coin)
+                                            .map((coin, index) => (loading ? (
+                                                <p><ClipLoader size="15px" /></p>
+                                            ) : (
+                                                <div key={index} className='w-full flex justify-between'>
+                                                    <p>{coin.balance.toFixed(6)} {coin.wallet_name}</p>
+                                                    {/* <p className='float-right'>Fee: 0 {coin.wallet_name}</p> */}
+                                                </div>
+                                            )
+                                            ))
+                                        }
+                                    </p>
+                                </div>
 
                                 {transferMessage && <p style={{ color: messageColor }}>{transferMessage}</p>}
                                 <div>

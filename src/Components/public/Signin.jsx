@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ClipLoader from "react-spinners/ClipLoader";
 import { Link, useNavigate } from 'react-router-dom';
 import Bomiblogo from "@/assets/images/bomib.com_logo.png";
@@ -66,9 +66,6 @@ function Signin() {
             setMessage(data.message);
             navigate("/profile/wallet");
 
-            console.log(data);
-
-
         } catch (error) {
             setMessageColor('orangered');
             setMessage(error.message || "An error occurred. Please try again.");
@@ -77,25 +74,8 @@ function Signin() {
         }
     };
 
-    // useEffect(() => {
-    //     const checkTokenExpiration = () => {
-    //         if (isTokenExpired()) {
-    //             localStorage.removeItem('authToken');
-    //             localStorage.removeItem('userDetails');
-    //             localStorage.removeItem('tokenExpiration');
-    //             alert('Your session has expired. Please log in again.');
-    //             navigate('/signin');
-    //         }
-    //     };
-
-    //     const intervalId = setInterval(checkTokenExpiration, 1000);
-
-    //     return () => clearInterval(intervalId);
-    // }, []);
-
-
     return (
-        <div className='w-full lg:w-[404px] m-auto'>
+        <div className='w-full lg:w-[404px] m-auto py-4 px-6'>
             <Link to="/" className="sm:w-fit sm:flex sm:items-center sm:gap-10 sm:py-[12px]">
                 <img src={Bomiblogo} alt='bomib.com_logo' className="sm:object-cover sm:h-[30px] sm:w-[30px]" />
                 <h1 className='sm:font-bold sm:text-xLarge'>BOMIB</h1>

@@ -291,8 +291,6 @@ function Section() {
             </table>
           </div>
         </div>
-
-
       </div>
     </>
   )

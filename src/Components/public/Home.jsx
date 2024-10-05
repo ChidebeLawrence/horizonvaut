@@ -5,7 +5,6 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
 import Bomiblogo from "@/assets/images/bomib.com_logo.png"
 import Modal from '@/Utilities/Modal';
-import Footer from "@/Components/public/Footer"
 import Smartphones from "@/assets/images/smartphones.png"
 import TrustPilot from "@/assets/images/trustPilot.svg"
 
@@ -47,23 +46,6 @@ function home() {
     const handleCloseMenu = () => {
         setOpenMenu(false);
     };
-
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const checkTokenExpiration = () => {
-            if (isTokenExpired()) {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('tokenExpiration');
-                alert('Your session has expired. Please log in again.');
-                navigate('/signin');
-            }
-        };
-
-        const intervalId = setInterval(checkTokenExpiration, 1000);
-
-        return () => clearInterval(intervalId);
-    }, []);
 
     const token = localStorage.getItem("authToken")
 
@@ -380,14 +362,14 @@ function home() {
                         </Link>
                     </div>
 
-                    {/* {token ? (
+                    {token ? (
                         <Link to="/profile/wallet" className='text-[16px] font-semibold'>Profile</Link>
-                    ) : ( */}
+                    ) : (
                         <div className='lg:w-50%'>
                             <Link to="/signin" className="font-semibold rounded-[10px] mr-[11px] py-[13px]">Login</Link>
                             <Link to="/signup" className="font-semibold rounded-[10px] bg-[#5717C7] px-[31px] py-[13px]">Sign Up</Link>
                         </div>
-                    {/* )} */}
+                    )}
                 </div>
 
                 {openMenu ? <IoClose className='h-[25px] w-[25px] cursor-pointer lgSm:hidden block' onClick={handleOpenMenu} /> : <GiHamburgerMenu className='h-[25px] w-[25px] cursor-pointer lgSm:hidden' onClick={handleOpenMenu} />}
@@ -655,8 +637,6 @@ function home() {
                     <Link to="/signup" className='bg-[#181121] text-center text-[16px] py-[12px] px-[45px] rounded-md'>Sign Up</Link>
                 </div>
             </div>
-
-            <Footer />
         </div>
     )
 }

@@ -1,15 +1,18 @@
-// src/Components/LayoutWithHeader.jsx
 import React from 'react';
 import Header from '@/Components/private/Header';
 import Footer from '@/Components/public/Footer';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 const LayoutWithHeader = () => {
+  const location = useLocation();
+
+  const hideHeaderPaths = ['/', '/home'];
+
   return (
     <div>
-      <Header />
+      {!hideHeaderPaths.includes(location.pathname) && <Header />}
       <div className="flex flex-col gap-42px">
-        <Outlet /> {/* This will render the matching child route */}
+        <Outlet />
         <Footer />
       </div>
     </div>

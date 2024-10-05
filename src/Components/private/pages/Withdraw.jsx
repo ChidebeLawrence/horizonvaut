@@ -83,8 +83,6 @@ function Withdraw() {
             return;
         }
 
-        console.log("Withdrawal Data:", withdrawalData);
-
         try {
             const response = await fetch("https://api.horizonvaut.com/wallet/withdraw", {
                 method: 'POST',
@@ -96,8 +94,6 @@ function Withdraw() {
             });
 
             const responseBody = await response.json();
-            console.log("Response Status:", response.status);
-            console.log("Response Body:", responseBody);
 
             if (response.ok) {
                 setWithdrawalMessage('Withdrawal successful!');
@@ -139,9 +135,6 @@ function Withdraw() {
                 },
             });
 
-            console.log("Balance", response.data);
-
-
             if (response.ok) {
                 const result = await response.json();
                 setBalance(result.data);
@@ -179,6 +172,14 @@ function Withdraw() {
             setSelectedCoin(coins[0]);
         }
     }, [coins]);
+
+    const handleSelectAll = () => {
+        if (selectedCoin && selectedCoin.Total > 0) {
+            setAmount(selectedCoin.Total);
+        } else {
+            setAmount("0")
+        }
+    };
 
     const wallet_overview = <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
         <line x1="52.4746" y1="8.35617" x2="31.3562" y2="38.5254" stroke="#FFB547" strokeWidth="12" strokeLinecap="round"></line>
@@ -299,18 +300,27 @@ function Withdraw() {
                                         required
                                     />
                                     <div className='absolute right-[20px] py-[16px] flex gap-[20px] top-[15px]'>
-                                        <p className='px-[1rem] cursor-pointer text-[#7044ee]'>All</p>
+                                        <p className='px-[1rem] cursor-pointer text-[#7044ee]' onClick={handleSelectAll}>All</p>
                                         <p className='px-[1rem] border-l border-l-[#dadada]'>{selectedCoin.Coin}</p>
                                     </div>
                                 </div>
 
-                                {Array.isArray(balance) && balance
-                                    .filter((coin) => coin.wallet_name === selectedCoin.Coin)
-                                    .map((coin, index) => (<div key={index} className='flex justify-between text-[12px] mt-[3px]'>
-                                        <p className='flex items-center gap-2'>Available: {loading ? <ClipLoader size="15px" /> : <>{coin.balance.toFixed(6)} {coin.wallet_name}</>}</p>
-                                        {/* <p>Fee: 0 {coin.wallet_name}</p> */}
-                                    </div>
-                                    ))}
+                                <div className='items-center text-[12px] mt-[3px]'>
+                                    <p className='flex items-center gap-2'>Available:
+                                        {Array.isArray(balance) && balance
+                                            .filter((coin) => coin.wallet_name === selectedCoin.Coin)
+                                            .map((coin, index) => (loading ? (
+                                                <p><ClipLoader size="15px" /></p>
+                                            ) : (
+                                                <div key={index} className='w-full flex justify-between'>
+                                                    <p>{coin.balance.toFixed(6)} {coin.wallet_name}</p>
+                                                    {/* <p className='float-right'>Fee: 0 {coin.wallet_name}</p> */}
+                                                </div>
+                                            )
+                                            ))
+                                        }
+                                    </p>
+                                </div>
 
                                 {withdrawalMessage && <p style={{ color: messageColor }}>{withdrawalMessage}</p>}
                                 <div>

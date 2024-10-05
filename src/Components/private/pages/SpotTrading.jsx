@@ -91,8 +91,6 @@ function SpotTrading() {
                 amount: item.circulating_supply,
             }));
 
-            console.log(coinDetails[0]);
-
             if (coinDetails.length > 0) {
                 setSelectedCoin(coinDetails[0]);
             }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import "@/App.css";
 import LayoutWithHeader from '@/Components/LayoutWithHeader';
 import Section from '@/Components/private/Section';
@@ -26,26 +26,11 @@ import AuthRoute from '@/Components/private/AuthRoute';
 import ProtectedRoute from '@/Components/private/ProtectedRoute';
 import Home from "@/Components/public/Home"
 import useTokenExpiration from './Components/useTokenExpiration';
+import NotFound from './Components/public/NotFound';
 
 function App() {
   const location = useLocation();
   useTokenExpiration()
-  
-  useEffect(() => {
-        const checkTokenExpiration = () => {
-            if (isTokenExpired()) {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userDetails');
-                localStorage.removeItem('tokenExpiration');
-                alert('Your session has expired. Please log in again.');
-                navigate('/signin');
-            }
-        };
-
-        const intervalId = setInterval(checkTokenExpiration, 1000);
-
-        return () => clearInterval(intervalId);
-    }, []);
 
   useEffect(() => {
     const titles = {
@@ -74,6 +59,7 @@ function App() {
     <Routes>
       <Route path="/" element={<ProtectedRoute><LayoutWithHeader /></ProtectedRoute>}>
         <Route path="/profile">
+          <Route index element={<Navigate to="wallet" replace />} />
           <Route path="support" element={<Support />} />
           <Route path="wallet" element={<Section />} />
           <Route path="deposit" element={<Deposit />} />
@@ -94,6 +80,7 @@ function App() {
       </Route>
       <Route path="/" index element={<Home element={<Navigate to="/home" replace />} />} />
       <Route path="/home" index element={<Home />} />
+      <Route path="*" element={<NotFound />} />
       <Route path='/' element={<Index />}>
         <Route path="signin" element={<AuthRoute><Signin /></AuthRoute>} />
         <Route path="signup" element={<AuthRoute><Signup /></AuthRoute>} />

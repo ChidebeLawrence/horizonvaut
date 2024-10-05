@@ -40,11 +40,6 @@ function History() {
 
             const result = await response.json();
             const transactionData = result.data;
-            console.log(transactionData);
-
-            transactionData.forEach((transaction, index) => {
-                console.log(`Receiving Address for Transaction ${index + 1}:`, transaction.receiver_address);
-            });
 
             const transactionList = transactionData.map((transaction) => {
                 const formattedDate = new Date(transaction.last_updated * 1000).toLocaleDateString("en-US", {
@@ -68,8 +63,6 @@ function History() {
             const sortedTransactions = transactionList.sort((a, b) => b.lastUpdated - a.lastUpdated);
 
             localStorage.setItem('transactionHistory', JSON.stringify(sortedTransactions));
-
-            console.log('Stored transaction history:', sortedTransactions);
 
             setTransaction(sortedTransactions);
             setError("");
@@ -107,7 +100,7 @@ function History() {
                                         Status
                                     </th>
                                     <th className='border-none py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-1/6'>
-                                        Address
+                                        Address / Email
                                     </th>
                                 </tr>
                             </thead>

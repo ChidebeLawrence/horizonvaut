@@ -42,9 +42,6 @@ function ForgotPassword() {
         setMessage(messageFromResponse);
       }
 
-      console.log(response.data);
-
-
     } catch (error) {
       console.error(error);
       setMessageColor('orangered');

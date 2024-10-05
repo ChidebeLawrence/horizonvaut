@@ -1,12 +1,14 @@
-import React, { useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import Index from './Index'
 import { Link } from 'react-router-dom'
-import Generator from '@/assets/images/generator.png'
 import Info from '@/assets/images/info.svg'
 import SubHeaderTwo from '../../../Utilities/SubHeaderTwo'
+import { QRCode } from 'antd'
 
 function Auth() {
     const inputRefs = useRef([]);
+
+    const qrCodeValue = "KZZJE4OFFREGNMVE";
 
     const handleInputChange = (e, index) => {
         const { value } = e.target;
@@ -103,8 +105,8 @@ function Auth() {
                     </div>
 
                     <div className='flex flex-col items-center justify-center'>
-                        <img src={Generator} alt='generator' className='h-[230px] w-[230px]' />
-                        <p className='border border-[#DADADA] bg-[#F8FAFC] text-[11px] w-fit px-[30px] py-2'>KZZJE4OFFREGNMVE</p>
+                        <QRCode value={qrCodeValue} size="197" />
+                        <p className='border border-[#DADADA] bg-[#F8FAFC] text-[11px] w-fit px-[30px] py-2'>{qrCodeValue}</p>
                     </div>
                 </div>
             </div>

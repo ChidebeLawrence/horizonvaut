@@ -1,1 +1,0 @@
-The best practice for storing JWT tokens depends on your application's security requirements and architecture. However, here are the commonly recommended practices:

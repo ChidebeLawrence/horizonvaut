@@ -1036,7 +1036,8 @@
 
 
 const initialState = {
-  coins: [], // Start with an empty array
+  coins: [],
+  loading: false,
 };
 
 const rootReducer = (state = initialState, action) => {

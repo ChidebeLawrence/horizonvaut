@@ -38,7 +38,9 @@ function Header() {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsOpen(false);
       setIsModalOpen(false);
-      setOpenMenu(false);
+      setTimeout(() => {
+        setOpenMenu(false);
+      }, 500);
     }
   };
 
@@ -73,14 +75,14 @@ function Header() {
 
   const navigate = useNavigate();
 
-  // const handleLogout = () => {
-  //   setTimeout(() => {
-  //     localStorage.removeItem('authToken');
-  //     localStorage.removeItem('userDetails');
-  //     localStorage.removeItem('tokenExpiration');
-  //     navigate('/signin');
-  //   }, 500);
-  // };
+  const handleLogout = () => {
+    setTimeout(() => {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userDetails');
+      localStorage.removeItem('tokenExpiration');
+      navigate('/signin');
+    }, 500);
+  };
 
   useEffect(() => {
     const storedUserDetails = JSON.parse(localStorage.getItem('userDetails'));
@@ -89,20 +91,6 @@ function Header() {
     setUserId(storedUserDetails.userId);
   }, []);
 
-  useEffect(() => {
-    const checkTokenExpiration = () => {
-      if (isTokenExpired()) {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('tokenExpiration');
-        alert('Your session has expired. Please log in again.');
-        navigate('/signin');
-      }
-    };
-
-    const intervalId = setInterval(checkTokenExpiration, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
 
   const menu = <svg width="35" height="35" viewBox="0 0 100 100">
     <path class="header__nav-line header__nav-line1" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058"></path>
