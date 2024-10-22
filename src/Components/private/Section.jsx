@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { FaCaretDown } from 'react-icons/fa';
 import Avatar from "@/assets/images/avatar.png"
 import WalletInfoUsername from "@/assets/images/walletInfoUsername.svg"

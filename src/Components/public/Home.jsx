@@ -1,12 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import classNames from 'classnames';
 import { Link, useNavigate } from 'react-router-dom'
-import { GiHamburgerMenu } from "react-icons/gi";
-import { IoClose } from "react-icons/io5";
-import Bomiblogo from "@/assets/images/bomib.com_logo.png"
+import Horiznlogo from "@/assets/images/Horiznlogo.fw.png"
 import Modal from '@/Utilities/Modal';
 import Smartphones from "@/assets/images/smartphones.png"
 import TrustPilot from "@/assets/images/trustPilot.svg"
+import Footer from './Footer';
+import { GiHamburgerMenu } from "react-icons/gi";
+import { IoClose } from "react-icons/io5";
 
 function home() {
     const StyleLink = "rounded-md text-[16px] font-normal tracking-[0.5px] hover:text-activeColor flex items-center h-[20px] gap-5 font-[16px] font-semibold"
@@ -319,39 +320,46 @@ function home() {
 
     return (
         <div className='bg-[rgb(19,15,29)] w-full h-auto text-white'>
-            <div className='w-full lgSm:flex lg:items-center lg:justify-between px-[20px] bg-customDark text-white flex items-center justify-between'>
+            <div className='w-full lgSm:flex lg:items-center px-[20px] bg-customDark text-white flex items-center justify-between'>
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
 
                 <div className="flex items-center gap-10 py-[12px]">
-                    <img src={Bomiblogo} alt='bomib.com_logo.png' className="object-cover h-[30px] w-[30px]" />
-                    <h1 className='font-bold text-xLarge block block'>BOMIB</h1>
+                    <img src={Horiznlogo} alt='Horiznlogo' className="object-cover h-[30px] w-[30px]" />
+                    <h1 className='font-bold text-xLarge block block'>Horizon Vault</h1>
                 </div>
 
                 <div
                     className={classNames(
+                        // "lg:w-[80%] lgSm:flex lg:static",
                         "lg:w-[80%] lgSm:flex lg:static",
                         "mdSm:justify-between mdSm:h-auto mdSm:flex-row",
                         {
-                            'w-full bg-customDark flex-col absolute z-10 right-0 top-[60px] h-[385px] w-[300px] py-[20px] px-[20px] flex gap-[35px] overflow-y-auto': openMenu,
+                            'w-full bg-customDark flex-col absolute z-10 right-0 top-[60px] h-[385] w-[300px] py-[20px] px-[20px] flex gap-[35px] overflow-y-auto'
+                                : "openMenu",
                             'hidden': !openMenu,
                         }
                     )}
                     ref={dropdownRef}
                 >
                     <div className='lg:w-[50%] mdSm:mx-auto flex lg:justify-center flex-col mdSm:flex-row gap-8'>
-                        <Link to="/trading" className={`${StyleLink}`} onClick={handleCloseMenu}>Trading</Link>
+                        <Link to="/" className={`${StyleLink}`} onClick={handleCloseMenu}>Home</Link>
+                        <Link to="/trading" className={`${StyleLink}`} onClick={handleCloseMenu}>Price</Link>
 
-                        <Link to="#" className={`${StyleLink}`} onClick={handleLinkClick}>
+                        {/* <Link to="#" className={`${StyleLink}`} onClick={handleLinkClick}>
                             P2P
-                        </Link>
+                        </Link> */}
 
-                        <Link to="#" className={`${StyleLink}`} onClick={handleLinkClick}>
+                        <Link to="/profile/swap" className={`${StyleLink}`}>
                             Swap
                         </Link>
 
-                        <Link to="#" className={`${StyleLink}`} onClick={handleLinkClick}>
-                            Staking
+                        <Link to="/profile/investment" className={`${StyleLink}`}>
+                            Investment
                         </Link>
+
+                        {/* <Link to="#" className={`${StyleLink}`} onClick={handleLinkClick}>
+                            Staking
+                        </Link> */}
 
                         <Link to="/profile/wallet" className={`${StyleLink}`} onClick={handleCloseMenu}>
                             Wallet
@@ -365,14 +373,15 @@ function home() {
                     {token ? (
                         <Link to="/profile/wallet" className='text-[16px] font-semibold'>Profile</Link>
                     ) : (
-                        <div className='lg:w-50%'>
-                            <Link to="/signin" className="font-semibold rounded-[10px] mr-[11px] py-[13px]">Login</Link>
-                            <Link to="/signup" className="font-semibold rounded-[10px] bg-[#5717C7] px-[31px] py-[13px]">Sign Up</Link>
+                        <div className='hidden smLg:flex lg:w-50%'>
+                            <Link to="/signin" className="font-semibold rounded-[10px] mr-[11px] py-[8px]">Login</Link>
+                            <Link to="/signup" className="font-semibold rounded-[10px] bg-[#5717C7] px-[31px] py-[8px]">Sign Up</Link>
                         </div>
                     )}
                 </div>
 
-                {openMenu ? <IoClose className='h-[25px] w-[25px] cursor-pointer lgSm:hidden block' onClick={handleOpenMenu} /> : <GiHamburgerMenu className='h-[25px] w-[25px] cursor-pointer lgSm:hidden' onClick={handleOpenMenu} />}
+                {openMenu ? <IoClose className='h-[25px] w-[25px] cursor-pointer lg:hidden' onClick={handleOpenMenu} /> : <GiHamburgerMenu className='h-[25px] w-[25px] cursor-pointer lg:hidden' onClick={handleOpenMenu} />}
+
             </div>
 
             <div>
@@ -386,12 +395,12 @@ function home() {
                             "lg:text-normal",
                             "md:text-[55px]",
                             "text-[45px] font-semibold text-center"
-                        )}>Trade Smarter, Trade Faster on <span className='text-[#843EFF]'>Bomib</span></p>
+                        )}>Trade Smarter, Trade Faster on <span className='text-[#843EFF]'>Horizon Vault</span></p>
 
                         <p className={classNames(
                             "text-[#77767C] text-[18px] text-center",
                             "md:text-[21px]",
-                        )}>Welcome to Bomib, your one-stop destination for cryptocurrency trading. Here, you can access the most advanced trading tools, comprehensive security features, and a wide range of digital assets.</p>
+                        )}>Welcome to Horizon Vault, your one-stop destination for cryptocurrency trading. Here, you can access the most advanced trading tools, comprehensive security features, and a wide range of digital assets.</p>
 
                         <div className='flex gap-4 text-[16px] justify-center'>
                             <Link to="#" className='border border-[#843EFF] px-8 py-2 rounded-md'>Start Trading</Link>
@@ -424,7 +433,7 @@ function home() {
                 <div className='px-6 flex flex-col lgSm:flex-row items-center gap-4 my-12'>
                     <div className='w-[100%] mdLg:w-[76%] lgSm:w-1/2'>
                         <p className='text-[34px] md:text-[47px] font-semibold text-left lgSm:text-left mb-4 leading-[normal] lgSm:text-left text-center'>Industry-Leading Security Measures to Protect Your Assets</p>
-                        <p className='text-[#77767c] text-[16px] md:text-[21px] leading-[normal] lgSm:text-left text-center'>At Bomib, security is our top priority. We employ the highest standards of security protocols to ensure your funds and personal information are protected.</p>
+                        <p className='text-[#77767c] text-[16px] md:text-[21px] leading-[normal] lgSm:text-left text-center'>At Horizon Vault, security is our top priority. We employ the highest standards of security protocols to ensure your funds and personal information are protected.</p>
                     </div>
 
                     <div className='w-[100%] mdLg:w-[76%] lgSm:w-1/2 flex flex-wrap justify-center gap-16'>
@@ -637,6 +646,8 @@ function home() {
                     <Link to="/signup" className='bg-[#181121] text-center text-[16px] py-[12px] px-[45px] rounded-md'>Sign Up</Link>
                 </div>
             </div>
+
+            <Footer />
         </div>
     )
 }

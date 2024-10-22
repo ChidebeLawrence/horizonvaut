@@ -50,9 +50,9 @@ function More({ header, onLinkClick, setIsModalOpen }) {
             <MoreTab sub_header="P2P trading" description="Buy crypto from verified merchants" img={P2p} onLinkClick={onLinkClick} />
             <MoreTab sub_header="Buy crypto with card" description="Buy crypto via Card, Apple Pay, Google Pay" img={CardOne} onLinkClick={onLinkClick} />
             <MoreTab sub_header="Token listing" description="We can list your project on our exchange within 48 hours" img={Tokenlist} onLinkClick={onLinkClick} />
-            <MoreTab sub_header="Institutional home" description="Bomib offers the world's most powerful suite of institutional crypto trading solutions" img={Inst} onLinkClick={onLinkClick} />
-            <MoreTab sub_header="Bomib Card" description="Order and ise your card anywhere Visa® debit cards are accepted, at 40M+ merchants worldwide." img={CardTwo} onLinkClick={onLinkClick} />
-            <MoreTab sub_header="Bomib Ventures" description="Bomib Ventures is a fund focused on exploring high-quality projects with great potential" img={Ventures} onLinkClick={onLinkClick} />
+            <MoreTab sub_header="Institutional home" description="Horizon Vault offers the world's most powerful suite of institutional crypto trading solutions" img={Inst} onLinkClick={onLinkClick} />
+            <MoreTab sub_header="Horizon Vault Card" description="Order and ise your card anywhere Visa® debit cards are accepted, at 40M+ merchants worldwide." img={CardTwo} onLinkClick={onLinkClick} />
+            <MoreTab sub_header="Horizon Vault Ventures" description="Horizon Vault Ventures is a fund focused on exploring high-quality projects with great potential" img={Ventures} onLinkClick={onLinkClick} />
           </div>
         )}
       </div>

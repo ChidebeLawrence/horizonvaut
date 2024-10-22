@@ -356,7 +356,7 @@ function Withdraw() {
 
                     <div className='bg-white rounded-md flex flex-col gap-[45px] py-[1.5rem] px-[45px] text-[13px]'>
                         <div>
-                            <p className='text-[14px] font-semibold pb-[10px] text-[#101820]'>When does bomib.com process withdrawal requests?</p>
+                            <p className='text-[14px] font-semibold pb-[10px] text-[#101820]'>When does horizonvault.com process withdrawal requests?</p>
                             <p>Instant withdrawal may take 5 to 30 min to process. However, please note that in the event of high network congestion, withdrawals may take longer time.</p>
                         </div>
                         <div>
@@ -364,16 +364,16 @@ function Withdraw() {
                             <p>No, the withdrawal fee will charged beyond the indicated withdrawal amount. If traders want to withdraw all the withdrawable amount, traders can click on the "All" button and system will automatically input the amount after fees.</p>
                         </div>
                         <div>
-                            <p className='text-[14px] font-semibold pb-[10px] text-[#101820]'>Does bomib.com support withdrawals to a Smart Contract ETH wallet address?</p>
-                            <p>No, bomib.com does not support ETH withdrawals via Smart Contracts method. Instead, bomib.com only supports ETH withdrawals via Direct Transfer method.</p>
+                            <p className='text-[14px] font-semibold pb-[10px] text-[#101820]'>Does horizonvault.com support withdrawals to a Smart Contract ETH wallet address?</p>
+                            <p>No, horizonvault.com does not support ETH withdrawals via Smart Contracts method. Instead, horizonvault.com only supports ETH withdrawals via Direct Transfer method.</p>
                         </div>
                         <div>
-                            <p className='text-[14px] font-semibold pb-[10px] text-[#101820]'>Does bomib.com support withdrawals to a segwit BTC wallet address?</p>
-                            <p>Yes, bomib.com supports withdrawals to segwit BTC wallet addresses starting with "bc1", also known as bech32 addresses.</p>
+                            <p className='text-[14px] font-semibold pb-[10px] text-[#101820]'>Does horizonvault.com support withdrawals to a segwit BTC wallet address?</p>
+                            <p>Yes, horizonvault.com supports withdrawals to segwit BTC wallet addresses starting with "bc1", also known as bech32 addresses.</p>
                         </div>
                         <div>
-                            <p className='text-[14px] font-semibold pb-[10px] text-[#101820]'>Can traders fix their own withdrawal fees on bomib.com?</p>
-                            <p>At the moment, no. However, bomib.com is considering enabling this option for traders to determine their own withdrawal fees in the future.</p>
+                            <p className='text-[14px] font-semibold pb-[10px] text-[#101820]'>Can traders fix their own withdrawal fees on horizonvault.com?</p>
+                            <p>At the moment, no. However, horizonvault.com is considering enabling this option for traders to determine their own withdrawal fees in the future.</p>
                         </div>
                     </div>
                 </div>

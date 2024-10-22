@@ -105,7 +105,7 @@ function Auth() {
                     </div>
 
                     <div className='flex flex-col items-center justify-center'>
-                        <QRCode value={qrCodeValue} size="197" />
+                        <QRCode value={qrCodeValue} size="176" />
                         <p className='border border-[#DADADA] bg-[#F8FAFC] text-[11px] w-fit px-[30px] py-2'>{qrCodeValue}</p>
                     </div>
                 </div>

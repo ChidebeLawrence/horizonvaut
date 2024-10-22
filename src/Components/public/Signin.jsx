@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+/* eslint-disable react/no-unescaped-entities */
+import { useState } from 'react';
 import ClipLoader from "react-spinners/ClipLoader";
 import { Link, useNavigate } from 'react-router-dom';
-import Bomiblogo from "@/assets/images/bomib.com_logo.png";
+import Horiznlogo from "@/assets/images/Horiznlogo.fw.png";
 
 function Signin() {
     const arrow = <svg width="48" height="46" viewBox="0 0 48 46" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -51,7 +52,7 @@ function Signin() {
             });
 
             const data = await response.json();
-            const { access_token, username, email: userEmail, referral_id, expiration_in_seconds } = data.data;
+            const { access_token, refresh_token, username, email: userEmail, referral_id, expiration_in_seconds } = data.data;
             const expirationTime = Date.now() + expiration_in_seconds * 1000;
 
             if (!response.ok) {
@@ -59,6 +60,7 @@ function Signin() {
             }
 
             localStorage.setItem('authToken', access_token);
+            localStorage.setItem('refreshToken', refresh_token);
             localStorage.setItem('userDetails', JSON.stringify({ email: userEmail, username, referral_id, last_updated: currentTimeFormatted }));
             localStorage.setItem('tokenExpiration', expirationTime);
 
@@ -77,8 +79,8 @@ function Signin() {
     return (
         <div className='w-full lg:w-[404px] m-auto py-4 px-6'>
             <Link to="/" className="sm:w-fit sm:flex sm:items-center sm:gap-10 sm:py-[12px]">
-                <img src={Bomiblogo} alt='bomib.com_logo' className="sm:object-cover sm:h-[30px] sm:w-[30px]" />
-                <h1 className='sm:font-bold sm:text-xLarge'>BOMIB</h1>
+                <img src={Horiznlogo} alt='Horiznlogo' className="sm:object-cover sm:h-[30px] sm:w-[30px]" />
+                <h1 className='sm:font-bold sm:text-xLarge'>Horizon Vault</h1>
             </Link>
 
             <form onSubmit={handleSubmit}>

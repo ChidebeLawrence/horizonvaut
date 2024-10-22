@@ -1,5 +1,5 @@
 import React from 'react';
-import Bomiblogo from "@/assets/images/bomib.com_logo.png"
+import Horiznlogo from "@/assets/images/Horiznlogo.fw.png"
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -13,8 +13,8 @@ function Footer() {
                 <div className='flex flex-col w-full gap-[30px] lg:w-[240px]'>
                     <div>
                         <div className='flex items-center gap-[20px] mb-[10px]'>
-                            <img src={Bomiblogo} alt='bomib-logo' className='object-cover h-[39px] w-[39px]' />
-                            <h1 className='font-bold text-[26px] text-white'>BOMIB</h1>
+                            <img src={Horiznlogo} alt='Horiznlogo' className='object-cover h-[39px] w-[39px]' />
+                            <h1 className='font-bold text-[26px] text-white'>Horizon Vault</h1>
                         </div>
 
                         <svg width="169" height="18" viewBox="0 0 169 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,8 +27,8 @@ function Footer() {
                     </p>
 
                     <p className='text-colorSeven font-roboto font-normal text-xs leading-[15px] tracking-[0.02em]'>
-                        Listing Request: <span className='text-colorEight'>listing@bomib.com</span><br />
-                        Partnership: <span className='text-colorEight'>partnership@bomib.com</span>
+                        Listing Request: <span className='text-colorEight'>listing@horizonvault.com</span><br />
+                        Partnership: <span className='text-colorEight'>partnership@horizonault.com</span>
                     </p>
 
                     <div>
@@ -54,7 +54,7 @@ function Footer() {
                             <Link path="#" className="hover:text-white">Instant swap</Link>
                             <Link path="#" className="hover:text-white">P2P trading</Link>
                             <Link path="#" className="hover:text-white">DeFi Staking</Link>
-                            <Link path="#" className="hover:text-white">Bomib Visa Card</Link>
+                            <Link path="#" className="hover:text-white">Horizon Vault Visa Card</Link>
                         </div>
                     </div>
 
@@ -67,7 +67,7 @@ function Footer() {
                             <Link path="#" className="hover:text-white">ETH 2.0 staking</Link>
                             <Link path="#" className="hover:text-white">Launchpad</Link>
                             <Link path="#" className="hover:text-white">Savings</Link>
-                            <Link path="#" className="hover:text-white">Bomib ventures</Link>
+                            <Link path="#" className="hover:text-white">Horizon Vault ventures</Link>
                             <Link path="#" className="hover:text-white">Buy crypto</Link>
                         </div>
                     </div>
@@ -104,7 +104,7 @@ function Footer() {
 
             <div className="text-[9px] leading-[15px] max-w-[1200px] mx-auto text-center mt-[2rem]">
                 In acceding to or using the Platform and the Site, you represent and warrant that you are fully aware of the risks associated with the transactions involving Digital Assets or the use of Platform. You agree and understand that you are solely responsible for determining the nature, potential value, suitability, and appropriateness of these risks for yourself, and that the Company does not give advice or recommendations regarding any Digital Asset, including the suitability and appropriateness of, and investment strategies for, any Digital Asset. You agree and understand that you access and use the Platform and the Site at your own risk. <br />
-                <span>Bomib 2024 © All right reserved</span>
+                <span>Horizon Vault 2024 © All right reserved</span>
             </div>
         </div>
     );

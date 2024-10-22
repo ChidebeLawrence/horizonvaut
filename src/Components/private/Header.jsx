@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import classNames from 'classnames';
-import Bomiblogo from "@/assets/images/bomib.com_logo.png"
+import Horiznlogo from "@/assets/images/Horiznlogo.fw.png"
 import { Link, useNavigate } from 'react-router-dom'
 import { FaCaretDown } from 'react-icons/fa';
 import Avatar from "@/assets/images/avatar.png"
@@ -12,10 +12,6 @@ import Codes from "@/assets/images/codes.svg"
 import Verification from "@/assets/images/verification.svg"
 import Support from "@/assets/images/support.svg"
 import Exit from "@/assets/images/exit.svg"
-import Derivatives from '@/Utilities/derivativesTab/Derivatives';
-import Tools from '@/Utilities/toolsTab/Tools';
-import Earn from '@/Utilities/earnTab/Earn';
-import More from '@/Utilities/moreTab/More';
 import ProfileTab from '@/Utilities/ProfileTab';
 import Modal from '@/Utilities/Modal';
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -78,6 +74,7 @@ function Header() {
   const handleLogout = () => {
     setTimeout(() => {
       localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('userDetails');
       localStorage.removeItem('tokenExpiration');
       navigate('/signin');
@@ -110,22 +107,22 @@ function Header() {
 
       <div>
         <Link to="/" className="flex items-center gap-10 py-[12px]">
-          <img src={Bomiblogo} alt='bomib.com_logo.png' className="object-cover h-[30px] w-[30px]" />
-          <h1 className='font-bold text-xLarge block block'>BOMIB</h1>
+          <img src={Horiznlogo} alt='Horiznlogo' className="object-cover h-[30px] w-[30px]" />
+          <h1 className='font-bold text-xLarge block block'>Horizon Vault</h1>
         </Link>
       </div>
 
       <div
         className={classNames(
-          'lg:flex lg:flex-row lg:items-center lg:gap-15 lg:relative lg:z-0 lg:top-0 lg:px-0 lg:py-0 lg:w-fit lg:overflow-none',
+          'lg:flex lg:flex-row lg:items-center lg:gap-[25px] lg:relative lg:z-0 lg:top-0 lg:px-0 lg:py-0 lg:w-fit lg:overflow-none',
           {
-            'block bg-customDark absolute z-10 right-0 top-[60px] h-[445px] w-[300px] py-[20px] px-[20px] flex flex-col gap-[35px] overflow-y-auto': openMenu,
+            'block bg-customDark absolute z-10 right-0 top-[60px] h-[445] h-[20] w-[300px] py-[20px] px-[20px] flex flex-col gap-[35px] overflow-y-auto': openMenu,
             'hidden': !openMenu,
           }
         )}
         ref={dropdownRef}
       >
-        <Link to="/trading" className={`${StyleLink}`} onClick={handleCloseMenu}>Spot Trading</Link>
+        {/* <Link to="/trading" className={`${StyleLink}`} onClick={handleCloseMenu}>Spot Trading</Link>
         <Link to="#" className={`${StyleLink} flex items-center gap-5 ${StyleLink}`} onClick={handleLinkClick} ref={dropdownRef}>
           Swap<span className="bg-greenTab text-white text-[10px] px-1 h-[20px] w-[24px] text-[8px] text-center rounded-sm flex items-center justify-center h-[16px] w-[25px]">0%</span>
         </Link>
@@ -139,15 +136,29 @@ function Header() {
         </Link>
 
         <Earn header="Earn" onLinkClick={handleLinkClick} setIsModalOpen={setIsModalOpen} />
-        <More header="More" onLinkClick={handleLinkClick} setIsModalOpen={setIsModalOpen} />
+        <More header="More" onLinkClick={handleLinkClick} setIsModalOpen={setIsModalOpen} /> */}
+
+        <Link to="/" className={`${StyleLink}`} onClick={handleCloseMenu}>
+          Home
+        </Link>
+
+        <Link to="/trading" className={`${StyleLink}`} onClick={handleCloseMenu}>Price</Link>
+
+        <Link to="/profile/swap" className={`${StyleLink} flex items-center gap-5 ${StyleLink}`} ref={dropdownRef}>
+          Swap<span className="bg-greenTab text-white text-[10px] px-1 h-[20px] w-[24px] text-[8px] text-center rounded-sm flex items-center justify-center h-[16px] w-[25px]">0%</span>
+        </Link>
+
+        <Link to="/profile/investment" className={`${StyleLink} flex items-center gap-5 ${StyleLink}`} ref={dropdownRef}>
+          Invexstment
+        </Link>
 
         <Link to="/profile/support" className={`${StyleLink}`} onClick={handleCloseMenu}>
           Support
           <span className="bg-redTab text-white text-[10px] px-1 h-[20px] w-[24px] text-[8px] text-center rounded-sm animate-fade">1</span>
         </Link>
 
-        <Link to="#" className={`${StyleLink} lg:block hidden`} onClick={handleLinkClick}>My NFTs</Link>
-        <p className={`${StyleLink} hover:text-[#d1d5db] lg:block hidden`}>Wallet: 0 USD</p>
+        {/* <Link to="#" className={`${StyleLink} lg:block hidden`} onClick={handleLinkClick}>My NFTs</Link>*/}
+        <p className={`${StyleLink} hover:text-[#d1d5db] lg:block hidden`}>Wallet: 0 USD</p> 
       </div>
 
       <div className="relative flex items-center" ref={dropdownRef}>

@@ -1,216 +1,117 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
-import Index from "./Index";
-import SubHeaderTwo from "@/Utilities/SubHeaderTwo";
-import { ClipLoader } from 'react-spinners';
+import { useNavigate } from 'react-router-dom';
 
-function AccountSettings() {
-    const icon = <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="52.4746" y1="8.35617" x2="31.3562" y2="38.5254" stroke="#52C050" stroke-width="12" stroke-linecap="round"></line>
-        <line x1="29.4746" y1="8.35617" x2="8.35616" y2="38.5254" stroke="#7044EE" stroke-width="12" stroke-linecap="round"></line>
-    </svg>
+const UpdatePassword = () => {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [password, setPassword] = useState(''); // State for new password
+  const [otp, setOtp] = useState(''); // State for OTP
+  const [isOtpSent, setIsOtpSent] = useState(false); // State to check if OTP is sent
+  const navigate = useNavigate();
 
-    const security = <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12.2385 2.60182L6.41685 4.79515C5.07518 5.29682 3.97852 6.88348 3.97852 8.30682V16.9752C3.97852 18.3518 4.88852 20.1602 5.99685 20.9885L11.0135 24.7335C12.6585 25.9702 15.3652 25.9702 17.0102 24.7335L22.0268 20.9885C23.1352 20.1602 24.0452 18.3518 24.0452 16.9752V8.30682C24.0452 6.87182 22.9485 5.28515 21.6069 4.78348L15.7852 2.60182C14.7935 2.24015 13.2068 2.24015 12.2385 2.60182Z" stroke="#191D31" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M14.0001 14.5832C15.2887 14.5832 16.3334 13.5385 16.3334 12.2498C16.3334 10.9612 15.2887 9.9165 14.0001 9.9165C12.7114 9.9165 11.6667 10.9612 11.6667 12.2498C11.6667 13.5385 12.7114 14.5832 14.0001 14.5832Z" stroke="#191D31" stroke-width="1.75" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M14 14.5835V18.0835" stroke="#191D31" stroke-width="1.75" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-    </svg>
+  // Assuming userDetails contains the user's email
+  const userDetails = {
+    email: 'johndoe@gmail.com', // Replace with the actual stored email
+  };
 
-    const key = <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16.4915 12.4421C14.7748 14.1504 12.3165 14.6754 10.1581 14.0004L6.23313 17.9171C5.9498 18.2088 5.39146 18.3838 4.99146 18.3254L3.1748 18.0754C2.5748 17.9921 2.01646 17.4254 1.9248 16.8254L1.6748 15.0088C1.61646 14.6088 1.80813 14.0504 2.08313 13.7671L5.9998 9.85042C5.33313 7.68376 5.8498 5.22542 7.56646 3.51709C10.0248 1.05876 14.0165 1.05876 16.4831 3.51709C18.9498 5.97542 18.9498 9.98376 16.4915 12.4421Z" stroke="white" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M5.74146 14.5752L7.65812 16.4919" stroke="white" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M12.0833 9.1665C12.7736 9.1665 13.3333 8.60686 13.3333 7.9165C13.3333 7.22615 12.7736 6.6665 12.0833 6.6665C11.3929 6.6665 10.8333 7.22615 10.8333 7.9165C10.8333 8.60686 11.3929 9.1665 12.0833 9.1665Z" stroke="white" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
-    </svg>
+  const sendOtp = async () => {
+    setLoading(true);
+    const email = userDetails.email; // Get email from userDetails
 
-    const lock = <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5.5 8.33317V6.6665C5.5 3.90817 6.33333 1.6665 10.5 1.6665C14.6667 1.6665 15.5 3.90817 15.5 6.6665V8.33317" stroke="#667085" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M10.5 15.4167C11.6506 15.4167 12.5833 14.4839 12.5833 13.3333C12.5833 12.1827 11.6506 11.25 10.5 11.25C9.34937 11.25 8.41663 12.1827 8.41663 13.3333C8.41663 14.4839 9.34937 15.4167 10.5 15.4167Z" stroke="#667085" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M14.6666 18.3335H6.33329C2.99996 18.3335 2.16663 17.5002 2.16663 14.1668V12.5002C2.16663 9.16683 2.99996 8.3335 6.33329 8.3335H14.6666C18 8.3335 18.8333 9.16683 18.8333 12.5002V14.1668C18.8333 17.5002 18 18.3335 14.6666 18.3335Z" stroke="#667085" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
-    </svg>
+    try {
+      const response = await fetch('https://api.horizonvaut.com/auth/send-otp', { // Use the correct endpoint for sending OTP
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }), // Send email to request OTP
+      });
 
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [otp, setOtp] = useState('');
-    const [otpSent, setOtpSent] = useState(false);
-    const [otpLoading, setOtpLoading] = useState(false);
-    const [message, setMessage] = useState('');
-    const [messageColor, setMessageColor] = useState('');
-    const [loading, setLoading] = useState(false);
+      const data = await response.json();
 
-    const validatePassword = (password) => {
-        return password.length >= 8;
-    };
-    
-    const handleSendOtp = async () => {
-        setOtpLoading(true);
-        const email = localStorage.getItem('userEmail'); // Assuming email is stored in localStorage
+      if (response.ok) {
+        setMessage('OTP sent to your email successfully!');
+        setIsOtpSent(true); // Set state indicating OTP has been sent
+      } else {
+        setMessage(data.message || 'Failed to send OTP.');
+      }
+    } catch (error) {
+      setMessage('An error occurred while sending OTP.');
+    }
 
-        try {
-            const response = await fetch('https://api.horizonvaut.com/auth/send-otp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: email, // Send the email in the body to trigger OTP
-                }),
-            });
+    setLoading(false);
+  };
 
-            const data = await response.json();
+  const updatePassword = async () => {
+    setLoading(true);
+    const email = userDetails.email; // Get email from userDetails
 
-            if (response.ok && data.success) {
-                setOtpSent(true); // OTP sent successfully
-                setMessageColor('limegreen');
-                setMessage('OTP sent to your email.');
-            } else {
-                setMessageColor('orangered');
-                setMessage(data.message || "Failed to send OTP. Please try again.");
-            }
-        } catch (error) {
-            setMessageColor('orangered');
-            setMessage(error.message || "An error occurred. Please try again.");
-        } finally {
-            setOtpLoading(false); // Stop OTP loading
-        }
-    };
+    try {
+      const response = await fetch('https://api.horizonvaut.com/auth/update-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, otp }), // Send email, password, and OTP
+      });
 
-    const handleChangePassword = async (e) => {
-        e.preventDefault();
+      const data = await response.json();
 
-        if (!validatePassword(newPassword)) {
-            setMessage("Password must be at least 8 characters long.");
-            setMessageColor('orange');
-            return;
-        }
+      if (response.ok) {
+        setMessage('Password updated successfully!');
+        // Optionally navigate to a different page or show a success message
+        navigate('/signin'); // Redirect to sign in after successful password update
+      } else {
+        setMessage(data.message || 'Failed to update password.');
+      }
+    } catch (error) {
+      setMessage('An error occurred while updating the password.');
+    }
 
-        if (newPassword !== confirmPassword) {
-            setMessage("Passwords do not match!");
-            setMessageColor('orange');
-            return;
-        }
+    setLoading(false);
+  };
 
-        setLoading(true);
-        const token = localStorage.getItem('authToken');
-        const email = localStorage.getItem('userEmail');
+  return (
+    <div>
+      <h2>Update Password</h2>
 
-        try {
-            if (!token) {
-                throw new Error("No authentication token found");
-            }
-
-            const response = await fetch('https://api.horizonvaut.com/auth/update-password', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: newPassword,
-                    otp: otp, // Send the OTP with the request
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                setMessageColor('limegreen');
-                setMessage("Password changed successfully!");
-                setNewPassword('');  // Clear password input
-                setConfirmPassword(''); // Clear confirm password input
-            } else {
-                setMessageColor('orangered');
-                setMessage(data.message || "An error occurred. Please try again.");
-            }
-        } catch (error) {
-            setMessageColor('orangered');
-            setMessage(error.message || "An error occurred. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className='mb-[15rem]'>
-            <SubHeaderTwo icon={icon} header="Account password" content="Login password is used to log in to your account" />
-            <Index />
-            <div className={classNames(
-                'bg-white text-[#78778B] m-[20px] py-4 px-[40px] flex flex-col gap-[20px] rounded-md',
-                'text-[#78778B] lg:mx-[55px] lg:mb-[50px] lg:py-6 lg:px-[40px] lg: lg:items-start lg:justify-between',
-            )}>
-                <div className='flex items-center gap-[20px] smLg:w-[50%] lg:w-full lg:w-[50%]'>
-                    <p>{security}</p>
-                    <div>
-                        <p className='text-[20px] text-black font-semibold'>Change password</p>
-                        <p className='text-[12px]'>Contains at least 8 characters, one number and one symbol</p>
-                    </div>
-                </div>
-
-                <div className='smLg:w-full flex-col lg:w-full flex justify-between gap-[16px]'>
-                    <form onSubmit={handleChangePassword} className='flex flex-col gap-4 justify-between gap-[16px] w-full'>
-                        <p className='relative w-full'>
-                            <input
-                                type='password'
-                                placeholder='Enter new password'
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className='w-full py-[13px] pl-[35px] pr-[20px] focus:outline-[#825fe9] border border-[#e5e8eb] rounded-md text-black'
-                                required
-                            />
-                            <p className='absolute top-[10px] left-[8px]'>{lock}</p>
-                        </p>
-
-                        <p className='relative w-full'>
-                            <input
-                                type='password'
-                                placeholder='Repeat new password'
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className='w-full py-[13px] pl-[35px] pr-[20px] focus:outline-[#825fe9] border border-[#e5e8eb] rounded-md text-black'
-                                required
-                            />
-                        </p>
-
-                        <p className='relative w-full'>
-                            <input
-                                type="text"
-                                placeholder="OTP"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                className='w-full py-[13px] pl-[35px] pr-[20px] focus:outline-[#825fe9] border border-[#e5e8eb] rounded-md text-black'
-                                required
-                            />
-                        </p>
-
-                        {!otpSent && (
-                            <button type="button" onClick={handleSendOtp} disabled={otpLoading}>
-                                {otpLoading ? 'Sending OTP...' : 'Send OTP'}
-                            </button>
-                        )}
-
-                        <button
-                            className={`w-full py-[14px] bg-[#825fe9] text-white text-[14px] rounded-md flex items-center justify-center gap-[5px] ${loading ? 'opacity-50 cursor-default' : ''}`}
-                            disabled={loading || !otpSent}
-                        >
-                            {loading ? (
-                                <div className='flex justify-center items-center gap-[7px]'>
-                                    Change password
-                                    <ClipLoader color={"#ffffff"} loading={loading} size={20} />
-                                </div>
-                            ) : (
-                                "Change password"
-                            )}
-                        </button>
-
-                        {/* <button type="submit" disabled={loading || !otpSent}>
-                            Change Password
-                        </button> */}
-                    </form>
-                    {message && <p style={{ color: messageColor }}>{message}</p>}
-                </div>
-            </div>
+      {!isOtpSent ? (
+        <div>
+          <button onClick={sendOtp} disabled={loading}>
+            {loading ? 'Sending OTP...' : 'Send OTP'}
+          </button>
+          {message && <p>{message}</p>}
         </div>
-    );
-}
+      ) : (
+        <div>
+          <div>
+            <label htmlFor="password">New Password:</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="otp">OTP:</label>
+            <input
+              type="text"
+              id="otp"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+            />
+          </div>
+          <button onClick={updatePassword} disabled={loading}>
+            {loading ? 'Updating...' : 'Update Password'}
+          </button>
+          {message && <p>{message}</p>}
+        </div>
+      )}
+    </div>
+  );
+};
 
-export default AccountSettings;
+export default UpdatePassword;

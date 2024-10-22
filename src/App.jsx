@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import "@/App.css";
+import { jwtDecode } from 'jwt-decode';
 import LayoutWithHeader from '@/Components/LayoutWithHeader';
 import Section from '@/Components/private/Section';
 import Deposit from '@/Components/private/pages/Deposit';
@@ -25,16 +27,52 @@ import ForgotPassword from '@/Components/public/ForgotPassword';
 import AuthRoute from '@/Components/private/AuthRoute';
 import ProtectedRoute from '@/Components/private/ProtectedRoute';
 import Home from "@/Components/public/Home"
-import useTokenExpiration from './Components/useTokenExpiration';
 import NotFound from './Components/public/NotFound';
+import Swap from './Components/private/pages/Swap';
+import Investment from './Components/private/pages/Investment';
+import AdminIndex from './Components/admin/AdminIndex';
+import Users from './Components/admin/Users';
+import Products from './Components/admin/Products';
+import VerifyOtp from './Components/public/VerifyOtp';
 
 function App() {
   const location = useLocation();
-  useTokenExpiration()
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('refreshToken');
+
+    if (!token) {
+      console.log('No token found, logging out.');
+      handleLogout();
+    } else if (isTokenExpired(token)) {
+      console.log('Token expired, logging out.');
+      handleLogout();
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    navigate('/signin');
+  };
+
+  const isTokenExpired = (token) => {
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      
+      return decodedToken.exp < currentTime;
+    } catch (error) {
+      console.log('Error decoding token:', error);
+      return true;
+    }
+  };
 
   useEffect(() => {
     const titles = {
       '/profile/wallet': 'Wallet overview',
+      '/profile/investment': 'Investment',
       '/profile/support': 'Customer support chat',
       '/profile/deposit': 'Deposit coins',
       '/profile/withdraw': 'Withdraw',
@@ -50,9 +88,12 @@ function App() {
       '/profile/affiliate': 'Affiliate Program',
       '/profile/api': 'API Management',
       '/profile/promo-codes': 'Activate Gift codes',
+      '/signin': 'Sign In',
+      '/signup': 'Sign Up',
+      '/compelete-signup': 'Compelete Sign Up',
     };
 
-    document.title = titles[location.pathname] || 'Bomib.com';
+    document.title = titles[location.pathname] || 'Horizon Vault.com';
   }, [location]);
 
   return (
@@ -60,6 +101,8 @@ function App() {
       <Route path="/" element={<ProtectedRoute><LayoutWithHeader /></ProtectedRoute>}>
         <Route path="/profile">
           <Route index element={<Navigate to="wallet" replace />} />
+          <Route path="swap" element={<Swap />} />
+          <Route path="investment" element={<Investment />} />
           <Route path="support" element={<Support />} />
           <Route path="wallet" element={<Section />} />
           <Route path="deposit" element={<Deposit />} />
@@ -78,13 +121,21 @@ function App() {
         </Route>
         <Route path="/trading" element={<SpotTrading />} />
       </Route>
+
       <Route path="/" index element={<Home element={<Navigate to="/home" replace />} />} />
       <Route path="/home" index element={<Home />} />
       <Route path="*" element={<NotFound />} />
+
       <Route path='/' element={<Index />}>
         <Route path="signin" element={<AuthRoute><Signin /></AuthRoute>} />
         <Route path="signup" element={<AuthRoute><Signup /></AuthRoute>} />
+        <Route path="verify-otp" element={<AuthRoute><VerifyOtp /></AuthRoute>} />
         <Route path="forgot-password" element={<AuthRoute><ForgotPassword /></AuthRoute>} />
+      </Route>
+
+      <Route path='/admin' element={<AdminIndex />}>
+        <Route path='users' element={<Users />} />
+        <Route path='products' element={<Products />} />
       </Route>
     </Routes>
   );

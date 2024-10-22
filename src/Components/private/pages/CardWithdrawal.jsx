@@ -90,7 +90,7 @@ function CardWithdrawal() {
 
                     <p className='flex items-center justify-center gap-[12px] bg-[#F8FAFC] py-[20px] px-[30px] border border-t-[#dadada] rounded-b-md'>
                         <img src={Info} alt='info' />
-                        Please note that Bomib only accepts 1st party transfers with accounts in your name (3rd party transfers are not allowed) and will not be held responsible for any potential loses/rejection of funds associated with 3rd party transfers.                    </p>
+                        Please note that Horizon Vault only accepts 1st party transfers with accounts in your name (3rd party transfers are not allowed) and will not be held responsible for any potential loses/rejection of funds associated with 3rd party transfers.                    </p>
                 </div>
 
                 <div className='text-[#667085] flex flex-col gap-[2rem] w-full lg:w-[40%] flex-shrink-[1.2]'>

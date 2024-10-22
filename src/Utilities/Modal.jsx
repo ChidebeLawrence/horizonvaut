@@ -1,12 +1,12 @@
 import React from 'react';
-import Bomiblogo from "@/assets/images/bomib.com_logo.png"
+import Horiznlogo from "@/assets/images/Horiznlogo.fw.png"
 
 const Modal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20 text-[#667085] px-[20px] lg:px-0">
       <div className='bg-[#22202e] w-[30%] lg:w-[20%] h-[50%] flex items-center justify-center rounded-l-lg'>
-        <img src={Bomiblogo} alt='bomiblogo' className='h-[75px] w-[75px] smSm:h-[100px] smSm:w-[100px] md:h-[150px] md:w-[150px]' />
+        <img src={Horiznlogo} alt='Horiznlogo' className='h-[75px] w-[75px] smSm:h-[100px] smSm:w-[100px] md:h-[150px] md:w-[150px]' />
       </div>
 
       <div className='bg-[white] flex flex-col items-center justify-center w-[70%] lg:w-[30%] h-[50%] rounded-r-lg px-[10px] lg:px-0'>

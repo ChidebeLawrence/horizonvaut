@@ -9,8 +9,12 @@ import { ClipLoader } from 'react-spinners';
 import { fetchWalletBalances } from '@/redux/actions';
 
 function Transfer() {
+    const wallet_overview = <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="52.4746" y1="8.35617" x2="31.3562" y2="38.5254" stroke="#47DEFF" strokeWidth="12" strokeLinecap="round"></line>
+        <line x1="29.4746" y1="8.35617" x2="8.35616" y2="38.5254" stroke="#7044EE" strokeWidth="12" strokeLinecap="round"></line>
+    </svg>
+
     const coins = useSelector((state) => state.coins)
-    const depositCoin = coins.filter((coin) => coin.Deposit)
 
     const dispatch = useDispatch();
     const listCoin = useSelector((state) => state.coins);
@@ -25,7 +29,7 @@ function Transfer() {
     const [transferMessage, setTransferMessage] = useState('');
     const [messageColor, setMessageColor] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [selectOption, setSelectOption] = useState(false)
+    const [selectOption, setSelectOption] = useState(false);
     const [selectedCoin, setSelectedCoin] = useState({});
     const popularCoins = ["Tether", "Bitcoin", "Tron", "Ethereum", "USD Coin", "Dogecoin", "Litecoin"]
 
@@ -36,11 +40,6 @@ function Transfer() {
     const handleSelectOption = () => {
         setSelectOption(!selectOption)
     }
-
-    const wallet_overview = <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="52.4746" y1="8.35617" x2="31.3562" y2="38.5254" stroke="#47DEFF" strokeWidth="12" strokeLinecap="round"></line>
-        <line x1="29.4746" y1="8.35617" x2="8.35616" y2="38.5254" stroke="#7044EE" strokeWidth="12" strokeLinecap="round"></line>
-    </svg>
 
     const handleTransfer = async (e) => {
         e.preventDefault();
@@ -88,13 +87,12 @@ function Transfer() {
             } else {
                 const error = await response.json();
                 if (error.message === "Expired token") {
-                    // Handle expired token: Clear the token and redirect to login
-                    localStorage.removeItem('authToken'); // Clear the token
+                    localStorage.removeItem('authToken');
                     setTransferMessage('Your session has expired. Please log in again.');
                     setMessageColor("orangered");
                     setTimeout(() => {
-                        window.location.href = '/signin'; // Redirect to login page
-                    }, 2000); // Wait for 2 seconds before redirect
+                        window.location.href = '/signin';
+                    }, 2000);
                 } else {
                     setTransferMessage(error.message || 'Transfer failed. Please try again.');
                     setMessageColor("orangered");
@@ -181,7 +179,7 @@ function Transfer() {
 
     return (
         <>
-            <SubHeader sub_header_icon={wallet_overview} header="Internal transfer" content="Send crypto to Bomib users via email or account ID" />
+            <SubHeader sub_header_icon={wallet_overview} header="Internal transfer" content="Send crypto to Horizon Vault users via email or account ID" />
 
             <div className='flex gap-[2.5rem] py-[45px] px-[1.5rem] flex-col md:px-[3.5rem] lg:flex-row'>
                 <div className='bg-white text-[#667085] rounded-md h-fit w-full lg:w-[70%]'>
@@ -228,7 +226,7 @@ function Transfer() {
                                             return (
                                                 <p
                                                     key={index}
-                                                    onClick={() => handleSelectedCoin(selectedCoinData)} // Pass the found coin to the handler
+                                                    onClick={() => handleSelectedCoin(selectedCoinData)}
                                                     className={`bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[8px] py-[5px] text-[12px] text-[#404053] w-fit cursor-pointer text-center ${selectedCoin && selectedCoin.Coin === selectedCoinData?.Coin ? 'border border-[royalblue]' : ''}`}>
                                                     {coinName}
                                                 </p>
@@ -311,7 +309,7 @@ function Transfer() {
 
                         <p className='flex flex-wrap lg:flex-nowrap items-center lg:justify-center gap-[12px] bg-[#F8FAFC] py-[20px] px-[30px] border border-t-[#dadada] rounded-b-md'>
                             <img src={Info} alt='info' />
-                            Please note the network fee will only be charged for withdrawals to non-Bomib addresses. If the recipient address is correct and belongs to a Bomib account, the network fee will not be deducted.
+                            Please note the network fee will only be charged for withdrawals to non-Horizon Vault addresses. If the recipient address is correct and belongs to a Horizon Vault account, the network fee will not be deducted.
                         </p>
                     </form>
                 </div>
@@ -321,8 +319,8 @@ function Transfer() {
                     <div className='bg-white rounded-md py-[45px] px-[30px]'>
                         <p className='border-gradient-bottom text-[#101828] text-[18px] font-semibold pb-[3px] w-fit'>Important information</p>
                         <ul className='list-disc list-inside p-4 list-outside'>
-                            <li>The recipient (another Bomib user) will instantly receive your transfer. They may find the record in [Transaction History]</li>
-                            <li>Please note that for internal transfer within Bomib, no TxID in blockchain will be created</li>
+                            <li>The recipient (another Horizon Vault user) will instantly receive your transfer. They may find the record in [Transaction History]</li>
+                            <li>Please note that for internal transfer within Horizon Vault, no TxID in blockchain will be created</li>
                         </ul>
                     </div>
                 </div>

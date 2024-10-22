@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { QRCode } from 'antd';
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -133,7 +133,7 @@ function Deposite() {
                                     <div className='flex items-center text-[#51535C]'>
                                         {/* <img src={selectedCoin.Image} alt={selectedCoin.Alt} className="h-6 w-6 mr-2" ></img> */}
                                         <span className='mr-[3px]'>{selectedCoin.Coin}</span>
-                                        <span className='font-semibold'>{selectedCoin.Abbr}</span>
+                                        {/* <span className='font-semibold'>{selectedCoin.Abbr}</span> */}
                                     </div>
                                     <IoIosArrowDown />
                                 </div>
@@ -145,9 +145,9 @@ function Deposite() {
                                             <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
                                                 {listCoin.map((coin, index) => (
                                                     <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
-                                                        <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" />
+                                                        {/* <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" /> */}
                                                         <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
-                                                        <p className='font-semibold'>{coin.Abbr}</p>
+                                                        {/* <p className='font-semibold'>{coin.Abbr}</p> */}
                                                     </div>
                                                 ))}
                                             </div>
@@ -294,16 +294,16 @@ function Deposite() {
 
                     <div className='bg-white rounded-md flex flex-col py-[1.5rem] gap-[30px] px-[45px] text-[13px]'>
                         <div>
-                            <p className='text-[14px] font-semibold pb-[10px]'>Is it safe to deposit and store my cryptocurrencies with Bomib?</p>
-                            <p>Yes, it is safe to do so! To maintain a high level of asset security and flexibility, Bomib uses an industry-standard cold wallet to keep your deposited assets safe, and a hot wallet that allows for all-day withdrawals. All withdrawals undergo a strict confirmation procedure and every withdrawal request is manually reviewed by our team daily at 0:00AM, 8:00AM, and 4:00PM UTC. In addition, 100% of our traders' deposit assets are segregated from Bomib's own operating budget for increased financial accountability. If you wish to learn more, please refer to our Terms of Service.</p>
+                            <p className='text-[14px] font-semibold pb-[10px]'>Is it safe to deposit and store my cryptocurrencies with Horizon Vault?</p>
+                            <p>Yes, it is safe to do so! To maintain a high level of asset security and flexibility, Horizon Vault uses an industry-standard cold wallet to keep your deposited assets safe, and a hot wallet that allows for all-day withdrawals. All withdrawals undergo a strict confirmation procedure and every withdrawal request is manually reviewed by our team daily at 0:00AM, 8:00AM, and 4:00PM UTC. In addition, 100% of our traders' deposit assets are segregated from Horizon Vault's own operating budget for increased financial accountability. If you wish to learn more, please refer to our Terms of Service.</p>
                         </div>
                         <div>
-                            <p className='text-[14px] font-semibold pb-[10px]'>What type of coin deposits does Bomib support?</p>
+                            <p className='text-[14px] font-semibold pb-[10px]'>What type of coin deposits does Horizon Vault support?</p>
                             <p>We're constantly working on expanding the types of coin deposits we accept to better suit your needs. Here are the types of coin deposits we currently support: BTC ETH XRP EOS USDT DOGE DOT LTC XLM Note: Each coin must be based and have their transaction hash (TXID) validated on their respective standard blockchains. Depositing a coin type via a blockchain not listed above may result in the permanent loss of your coin.</p>
                         </div>
                         <div>
                             <p className='text-[14px] font-semibold pb-[10px]'>I don't see my deposit in my account. Why?</p>
-                            <p>There might be a few reasons for the delay. Here are the major reasons for the respective coins: BTC — Unconfirmed transactions on the blockchain (at least 3 confirmation is needed). ETH — Unconfirmed transactions on the blockchain (at least 30 confirmations are needed), or it could be a Smart Contract transaction that Bomib does not currently support. XRP or EOS — Invalid or missing tag/memo when the deposit was made. USDT — Unconfirmed transaction on the blockchain (1 or 30 or 100 confirmations are needed depending if the deposit was an Omni, ERC-20, or TRC-20 transfer).</p>
+                            <p>There might be a few reasons for the delay. Here are the major reasons for the respective coins: BTC — Unconfirmed transactions on the blockchain (at least 3 confirmation is needed). ETH — Unconfirmed transactions on the blockchain (at least 30 confirmations are needed), or it could be a Smart Contract transaction that Horizon Vault does not currently support. XRP or EOS — Invalid or missing tag/memo when the deposit was made. USDT — Unconfirmed transaction on the blockchain (1 or 30 or 100 confirmations are needed depending if the deposit was an Omni, ERC-20, or TRC-20 transfer).</p>
                         </div>
                     </div>
                 </div>

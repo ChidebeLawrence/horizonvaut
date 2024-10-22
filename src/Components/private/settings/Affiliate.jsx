@@ -15,7 +15,7 @@ function Affiliate() {
         // },
     ]
 
-    const [inputValue, setInputValue] = useState('https://bomib.com/signup?ref=528968178');
+    const [inputValue, setInputValue] = useState('https://horizonvault.com/signup?ref=528968178');
     const [isCopied, setIsCopied] = useState(false);
     const inputRef = useRef(null);
 
@@ -91,7 +91,7 @@ function Affiliate() {
                         <div className='flex flex-col items-center justify-center w-[239px] h-[249px] text-center'>
                             <img src={Invite} alt='invite' className='h-[154px] w-[154px]' />
                             <p className='text-[18px] font-semibold py-2'>Invite Friends</p>
-                            <p className='text-[#667085]'>Share referral code/link with your friends to sign up on Bomib</p>
+                            <p className='text-[#667085]'>Share referral code/link with your friends to sign up on Horizon Vault</p>
                         </div>
 
                         <div className='hidden lg:block'>{arrow}</div>
@@ -99,7 +99,7 @@ function Affiliate() {
                         <div className='flex flex-col items-center justify-center w-[239px] h-[249px] text-center'>
                             <img src={Deposit} alt='deposit' className='h-[154px] w-[154px]' />
                             <p className='text-[18px] font-semibold py-2'>Referee Deposit & Trade</p>
-                            <p className='text-[#667085]'>Get your referees to deposit and trade after registering for a Bomib account</p>
+                            <p className='text-[#667085]'>Get your referees to deposit and trade after registering for a Horizon Vault account</p>
                         </div>
 
                         <div className='hidden lg:block'>{arrow}</div>
@@ -144,7 +144,7 @@ function Affiliate() {
 
                     <div className='flex flex-wrap md:flex-nowrap gap-[10px] p-[15px] items-center md:justify-center lg:gap-[12px] bg-[#FFFDEC] text-[#6D6D6D] lg:p-[20px] lg:py-[20px] lg:px-[30px] border border-[#FFDBA6] rounded-b-md'>
                         <img src={Info} alt='info' />
-                        Share your link with a friend who does not have a Bomib account. Regular Task: Referees must accumulatively deposit more than $50 within 14 days of registration. Both referrer and referee will be rewarded with a 100 USDT trading fee rebate voucher each. Disclaimer: You can only claim one reward per referral.
+                        Share your link with a friend who does not have a Horizon Vault account. Regular Task: Referees must accumulatively deposit more than $50 within 14 days of registration. Both referrer and referee will be rewarded with a 100 USDT trading fee rebate voucher each. Disclaimer: You can only claim one reward per referral.
                     </div>
                 </div>
             </div>
