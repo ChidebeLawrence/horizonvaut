@@ -34,6 +34,7 @@ import AdminIndex from './Components/admin/AdminIndex';
 import Users from './Components/admin/Users';
 import Products from './Components/admin/Products';
 import VerifyOtp from './Components/public/VerifyOtp';
+import AccountSetup from './Components/public/AccountSetup';
 
 function App() {
   const location = useLocation();
@@ -122,14 +123,15 @@ function App() {
         <Route path="/trading" element={<SpotTrading />} />
       </Route>
 
-      <Route path="/" index element={<Home element={<Navigate to="/home" replace />} />} />
-      <Route path="/home" index element={<Home />} />
+      <Route path="/" index element={<AuthRoute><Home element={<Navigate to="/home" replace />} /></AuthRoute>} />
+      <Route path="/home" index element={<AuthRoute><Home /></AuthRoute>} />
       <Route path="*" element={<NotFound />} />
 
       <Route path='/' element={<Index />}>
         <Route path="signin" element={<AuthRoute><Signin /></AuthRoute>} />
         <Route path="signup" element={<AuthRoute><Signup /></AuthRoute>} />
         <Route path="verify-otp" element={<AuthRoute><VerifyOtp /></AuthRoute>} />
+        <Route path="account-setup" element={<AccountSetup />} />
         <Route path="forgot-password" element={<AuthRoute><ForgotPassword /></AuthRoute>} />
       </Route>
 

@@ -1,147 +1,115 @@
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { ClipLoader } from "react-spinners";
+import {useState} from "react";
+import {useNavigate, useLocation} from "react-router-dom";
+import {ClipLoader} from "react-spinners";
+import {AuthApi} from "@/api/AuthAPI";
+import {toast} from "react-toastify";
+
 
 function VerifyOtp() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const email = new URLSearchParams(location.search).get("email");
-  const [otp, setOtp] = useState("");
-  const [messageColor, setMessageColor] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const email = new URLSearchParams(location.search).get("email");
+    const [otp, setOtp] = useState("");
+    const [loading, setLoading] = useState(false);
+    const auth = new AuthApi()
 
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    const formatCurrentTime = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
 
-    try {
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          otp,
-        }),
-      };
+        return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+    };
 
-      const response = await fetch(
-        "https://api.horizonvaut.com/auth/verify-email",
-        requestOptions
-      );
-      const data = await response.json();
-      const messageFromResponse = data.message;
-      const codeFromResponse = data.code;
+    const currentTimeFormatted = formatCurrentTime();
 
-      if (codeFromResponse === 200) {
-        const { token, user } = data;
 
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('userDetails', JSON.stringify(user));
+    const handleVerifyOtp = async (e) => {
+        e.preventDefault();
+        setLoading(true);
 
-        navigate("/profile/wallet");
-      } else {
-        setMessageColor("orangered");
-        setMessage(messageFromResponse);
-      }
-    } catch (error) {
-      setMessageColor("orangered");
-      setMessage("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+        try {
+            const {data} = await auth.VerifyOTP(email, otp)
+            const {access_token, refresh_token, username, email: userEmail, referral_id, expiration_in_seconds} = data;
+            const expirationTime = Date.now() + expiration_in_seconds * 1000;
+            await localStorage.setItem('authToken', access_token);
+            await localStorage.setItem('refreshToken', refresh_token);
+            await localStorage.setItem('userDetails', JSON.stringify({email: userEmail, username, referral_id, last_updated: currentTimeFormatted}));
+            await localStorage.setItem('tokenExpiration', expirationTime);
+            navigate("/account-setup");
+        } catch (error) {
+            toast.error(error)
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const handleResendOtp = async () => {
-    setLoading(true);
-    setMessage("");
+    const handleResendOtp = async () => {
+        setLoading(true);
+        try {
+            await auth.ResendOTP(email)
+            toast.success("An otp has been resent successfully.")
+        } catch (error) {
+            toast.error(error)
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    try {
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      };
+    return (
+        <div className="w-full  h-full  flex  items-center lg:w-[404px] m-auto py-4 px-6">
+            <form onSubmit={handleVerifyOtp}>
+                <div>
+                    <h1 className="text-[30px] font-semibold">Verify your Email</h1>
+                    <p className="text-[14px] text-[#78778b]">
+                        Enter the OTP sent to your email address
+                    </p>
+                </div>
+                <div className="flex flex-col gap-[1rem] mt-[1rem]">
+                    <div>
+                        <label>OTP</label>
 
-      const response = await fetch(
-        "https://api.horizonvaut.com/auth/resent-otp",
-        requestOptions
-      );
-      const data = await response.json();
-      const messageFromResponse = data.message;
-      const codeFromResponse = data.code;
-
-      if (codeFromResponse === 200) {
-        setMessageColor("limegreen");
-        setMessage(messageFromResponse || "OTP resent successfully.");
-      }
-
-      if (codeFromResponse !== 200) {
-        setMessageColor("red");
-        setMessage(messageFromResponse);
-      }
-    } catch (error) {
-      setMessageColor("orangered");
-      setMessage("An error occurred while resending OTP. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="w-full lg:w-[404px] m-auto py-4 px-6">
-      <form onSubmit={handleVerifyOtp}>
-        <div>
-          <h1 className="text-[30px] font-semibold">Verify your Email</h1>
-          <p className="text-[14px] text-[#78778b]">
-            Enter the OTP sent to your email address
-          </p>
+                        <input
+                            type="number"
+                            name="otp"
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            className="mt-[5px] text-[#78778b] py-[12px] px-[20px] w-full border border-[#dadada] outline-none focus:border-[blue] focus:border-2 rounded-md"
+                            placeholder="Enter OTP"
+                            required
+                        />
+                    </div>
+                    <button
+                        className={`bg-[#7044ee] text-white w-full py-[14px] rounded-md ${
+                            loading ? "opacity-50 cursor-default" : ""
+                        }`}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <div className="flex justify-center items-center gap-[7px]">
+                                Verifying
+                                <ClipLoader color={"#ffffff"} loading={loading} size={20}/>
+                            </div>
+                        ) : (
+                            "Verify OTP"
+                        )}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        className="text-blue-500 mt-2 w-full"
+                        disabled={loading}
+                    >
+                        Resend OTP
+                    </button>
+                </div>
+            </form>
         </div>
-        <div className="flex flex-col gap-[1rem] mt-[1rem]">
-          <div>
-            <label>OTP</label>
-            <input
-              type="text"
-              name="otp"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              className="mt-[5px] text-[#78778b] py-[12px] px-[20px] w-full border border-[#dadada] outline-none focus:border-[blue] focus:border-2 rounded-md"
-              placeholder="Enter OTP"
-              required
-            />
-          </div>
-          <button
-            className={`bg-[#7044ee] text-white w-full py-[14px] rounded-md ${
-              loading ? "opacity-50 cursor-default" : ""
-            }`}
-            disabled={loading}
-          >
-            {loading ? (
-              <div className="flex justify-center items-center gap-[7px]">
-                Verifying
-                <ClipLoader color={"#ffffff"} loading={loading} size={20} />
-              </div>
-            ) : (
-              "Verify OTP"
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={handleResendOtp}
-            className="text-blue-500 mt-2 w-full"
-            disabled={loading}
-          >
-            Resend OTP
-          </button>
-          <div style={{ color: messageColor }}>{message && <p>{message}</p>}</div>
-        </div>
-      </form>
-    </div>
-  );
+    );
 }
 
 export default VerifyOtp;

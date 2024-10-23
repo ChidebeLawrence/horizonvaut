@@ -17,7 +17,7 @@ export default defineConfig({
   },
   server: {
     // host: '0.0.0.0',
-    // port: 5173,
+    port: 5173,
     proxy: {
       "/api": {
         target: "https://api.coingecko.com",
@@ -27,7 +27,8 @@ export default defineConfig({
       '/horizon': {
         target: 'https://api.horizonvaut.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/horizon/, ''),
+         secure: false,
+        // rewrite: (path) => path.replace(/^\/horizon/, ''),
       },
     },
   },

@@ -1,81 +1,37 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
+import ClipLoader from "react-spinners/ClipLoader";
+import {AuthApi} from "@/api/AuthAPI";
+import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
 
-const AccountSetup = ({ onSetupComplete }) => {
-  const [userDetails, setUserDetails] = useState({
-    firstName: '',
-    lastName: '',
-    country: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+const AccountSetup = () => {
+    const auth = new AuthApi()
+    const navigate = useNavigate();
+    React.useEffect(() => {
+        const setup = async () => {
+            try {
+                await auth.AccountSetup()
+                navigate('/profile/wallet')
+            } catch (e) {
+                toast.error(e);
+            }
+        }
+        setup().then()
+    }, [])
 
-  const handleSetup = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    setError('');
 
-    const setupPayload = {
-      firstName: userDetails.firstName,
-      lastName: userDetails.lastName,
-      country: userDetails.country,
-    };
+    return (
+        <div className='flex flex-col justify-center items-center h-full'>
+            <h2 className='text-[20px] font-semibold font-sans'>Account Setup</h2>
 
-    try {
-      const response = await fetch("https://api.horizonvaut.com/auth/account-setup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(setupPayload),
-      });
+            <div className='mt-3'>
+                <ClipLoader color={"blue"} loading={true} size={40}/>
+            </div>
 
-      const data = await response.json();
+            <p className='font-sans text-[14px]'> Please wait for some minutes while we setup your account... </p>
 
-      if (response.ok) {
-        alert("Account setup completed successfully.");
-        onSetupComplete(); // Optionally redirect to dashboard or next page
-      } else {
-        setError(data.message || "Setup failed. Please try again.");
-      }
-    } catch (error) {
-      setError("Setup failed. Please check your network connection.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div>
-      <h2>Account Setup</h2>
-      <form onSubmit={handleSetup}>
-        <input
-          type="text"
-          placeholder="First Name"
-          value={userDetails.firstName}
-          onChange={(e) => setUserDetails({ ...userDetails, firstName: e.target.value })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Last Name"
-          value={userDetails.lastName}
-          onChange={(e) => setUserDetails({ ...userDetails, lastName: e.target.value })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Country"
-          value={userDetails.country}
-          onChange={(e) => setUserDetails({ ...userDetails, country: e.target.value })}
-          required
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Setting Up...' : 'Complete Setup'}
-        </button>
-      </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-    </div>
-  );
+        </div>
+    );
 };
 
 export default AccountSetup;
