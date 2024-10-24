@@ -181,7 +181,7 @@ function Signup() {
 
                     <div className="font-semibold pb-4">
                         <span className="text-[#78778b]">Already have an account? </span>
-                        <Link to="/signin">Sign in</Link>
+                        <Link to="/signin" className="hover:underline text-blue-500">Sign in</Link>
                     </div>
                 </div>
             </form>

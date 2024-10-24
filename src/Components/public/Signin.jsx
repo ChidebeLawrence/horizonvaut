@@ -70,28 +70,29 @@ function Signin() {
 
     return (
         <div className='w-full lg:w-[404px] m-auto py-4 px-6'>
-            <Link to="/" className="sm:w-fit sm:flex sm:items-center sm:gap-10 sm:py-[12px]">
-                <img src={Horiznlogo} alt='Horiznlogo' className="sm:object-cover sm:h-[30px] sm:w-[30px]"/>
-                <h1 className='sm:font-bold sm:text-xLarge'>Horizon Vault</h1>
+            <Link to="/" className="w-fit flex items-center gap-10 py-[12px]">
+                <img src={Horiznlogo} alt='Horiznlogo' className="object-cover h-[30px] w-[30px]"/>
+                <h1 className='font-bold text-xLarge'>Horizon Vault</h1>
             </Link>
 
             <form onSubmit={handleSubmit}>
                 <div>
-                    <h1 className='sm:text-[30px] sm:font-semibold sm:w-fit sm:flex sm:flex-col sm:items-end'>
+                    <h1 className='text-[30px] font-semibold w-fit flex flex-col items-end'>
+                    {/* <h1 className='sm:text-[30px] sm:font-semibold sm:w-fit sm:flex sm:flex-col sm:items-end'> */}
                         <span>{arrow}</span>
                         <p>Sign in</p>
                     </h1>
-                    <p className='sm:text-[14px] sm:text-[#78778b]'>Welcome back! Please enter your details</p>
+                    <p className='text-[14px] text-[#78778b]'>Welcome back! Please enter your details</p>
                 </div>
 
-                <div className='sm:flex sm:flex-col sm:gap-[2rem] sm:mt-[1rem]'>
+                <div className='flex flex-col gap-[2rem] mt-[1rem]'>
                     <div>
                         <label htmlFor='email'>Email</label>
                         <input
                             type='email'
                             id='email'
                             name='email'
-                            className='sm:mt-[10px] sm:text-[#78778b] sm:py-[12px] sm:px-[20px] sm:w-full border border-[#dadada] outline-none focus:border-[blue] focus:border-2 rounded-md'
+                            className='mt-[10px] text-[#78778b] py-[12px] px-[20px] w-full border border-[#dadada] outline-none focus:border-[blue] focus:border-2 rounded-md'
                             placeholder='Enter your email'
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -106,7 +107,7 @@ function Signin() {
                             type='password'
                             id='password'
                             name='password'
-                            className='sm:mt-[10px] sm:text-[#78778b] sm:py-[12px] sm:px-[20px] sm:w-full border border-[#dadada] outline-none focus:border-[blue] focus:border-2 rounded-md'
+                            className='mt-[10px] text-[#78778b] py-[12px] px-[20px] w-full border border-[#dadada] outline-none focus:border-[blue] focus:border-2 rounded-md'
                             placeholder='Enter your password'
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -115,12 +116,12 @@ function Signin() {
                         />
                     </div>
 
-                    <div className='sm:flex sm:justify-between sm:gap-2'>
+                    <div className='flex flex-wrap justify-between gap-2'>
                         <div className='flex items-center gap-2'>
-                            <input type='checkbox' className='border border-[red] sm:h-[15px] sm:w-[15px]'/>
+                            <input type='checkbox' className='border border-[red] h-[15px] w-[15px]'/>
                             <label className='text-[#78778b]'>Remember me</label>
                         </div>
-                        <Link to="/forgot-password">Forgot password</Link>
+                        <Link to="/forgot-password" className='hover:underline text-blue-500'>Forgot password</Link>
                     </div>
 
                     <button
@@ -139,7 +140,7 @@ function Signin() {
 
 
                     <div className='font-semibold pb-4'>
-                        <span className='text-[#78778b]'>Don't have an account? </span><Link to="/signup">Sign up</Link>
+                        <span className='text-[#78778b]'>Don't have an account? </span><Link to="/signup" className='hover:underline text-blue-500'>Sign up</Link>
                     </div>
                 </div>
             </form>

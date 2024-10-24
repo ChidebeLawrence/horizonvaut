@@ -1,27 +1,23 @@
-// // redux/store.js
-// import { createStore } from 'redux';
-// import rootReducer from './reducers'; // Import your root reducer
-
-// const store = createStore(
-//   rootReducer,
-//   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__() // Redux DevTools support
-// );
-
-// export default store;
-
-
-// redux/store.js
 import { createStore, applyMiddleware, compose } from 'redux';
-// import thunk from 'redux-thunk'; // Correctly import thunk
 import { thunk } from 'redux-thunk';
-import rootReducer from './reducers'; // Import your root reducer
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import rootReducer from './reducers';
 
-// Enable Redux DevTools and apply thunk middleware
+const persistConfig = {
+  key: 'root', 
+  storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
-  rootReducer,
-  composeEnhancers(applyMiddleware(thunk)) // Apply thunk middleware
+  persistedReducer,
+  composeEnhancers(applyMiddleware(thunk))
 );
 
-export default store;
+const persistor = persistStore(store);
+
+export { store, persistor };

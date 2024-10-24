@@ -118,7 +118,6 @@ const CoinPrice = () => {
                 </div>
             )}
 
-            {/* Pagination Controls */}
             <div className="flex justify-between mt-4">
                 <button
                     onClick={() => setPage(page > 1 ? page - 1 : 1)}

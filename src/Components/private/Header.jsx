@@ -28,6 +28,7 @@ function Header() {
 
   const handleDropdown = () => {
     setIsOpen(!isOpen);
+    setOpenMenu(false)
   }
 
   const handleClickOutside = (event) => {
@@ -59,6 +60,7 @@ function Header() {
   const [openMenu, setOpenMenu] = useState(false);
   const handleOpenMenu = () => {
     setOpenMenu(!openMenu)
+    setIsOpen(false)
   }
 
   const handleIsOpen = () => {
@@ -149,7 +151,7 @@ function Header() {
         </Link>
 
         <Link to="/profile/investment" className={`${StyleLink} flex items-center gap-5 ${StyleLink}`} ref={dropdownRef}>
-          Invexstment
+          Investment
         </Link>
 
         <Link to="/profile/support" className={`${StyleLink}`} onClick={handleCloseMenu}>

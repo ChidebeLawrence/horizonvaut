@@ -1,58 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
-import { useDispatch, useSelector } from "react-redux";
-import Btc from "@/assets/images/btc.png";
-import Eth from "@/assets/images/eth.svg";
+import { useSelector } from "react-redux";
 import Info from "@/assets/images/info.svg";
 
 function Swap() {
-  const ref = useRef(null);
+  const dropdownRef = useRef(null);
   const coins = useSelector((state) => state.coins);
-  const dispatch = useDispatch();
   const [amount, setAmount] = useState(0);
   const [send, setSend] = useState(false);
   const [receive, setReceive] = useState(false);
-  // const listCoin = useSelector((state) => state.coins);
+  const listCoin = useSelector((state) => state.coins);
 
-  const listCoin = [
-    {
-      Coin: "BTC",
-      img: Btc,
-      balance: 100,
-    },
-    {
-      Coin: "ETH",
-      img: Eth,
-      balance: 50,
-    },
-  ];
   const [balance, setBalance] = useState({
     balance: 100,
     wallet_name: "BTC",
   });
-  const [selectedSend, setSelectedSend] = useState({
-    Coin: "BTC",
-    img: Btc,
-    balance: 100,
-  });
-  const [selectedReceive, setSelectedReceive] = useState({
-    Coin: "ETH",
-    img: Eth,
-    balance: 100,
-  });
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const [selectedSend, setSelectedSend] = useState({});
+  const [selectedReceive, setSelectedReceive] = useState({});
 
   const handleSendOption = () => {
-    setSend(!send);
+    setSend((prev) => !prev);
+    setReceive(false)
   };
   const handleReceiveOption = () => {
-    setReceive(!receive);
+    setReceive((prev) => !prev);
+    setSend(false)
   };
   const handleSelectedSend = (coin) => {
     setSelectedSend(coin);
@@ -63,18 +35,43 @@ function Swap() {
     setReceive(false);
   };
   const handleAll = () => {
-    setAmount(selectedSend.balance);
+    setAmount(selectedSend.Total);
   };
+
+  useEffect(() => {
+    if (coins.length > 0) {
+      setSelectedSend({
+        Coin: coins[0].Coin,
+        img: coins[0].img,
+        Total: coins[0].Total,
+      });
+    }
+
+    if (coins.length > 0) {
+      setSelectedReceive({
+        Coin: coins[1].Coin,
+        img: coins[1].img,
+        Total: coins[1].Total,
+      });
+    }
+  }, [coins]);
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsOpen(false);
-      setIsModalOpen(false);
-      setTimeout(() => {
-        setOpenMenu(false);
-      }, 500);
+      setSend(false);
+      setReceive(false);
     }
   };
+
+  useEffect(() => {
+    // Set up the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const arrow = (
     <svg
@@ -97,11 +94,9 @@ function Swap() {
 
   return (
     <div
-      className="flex text-black gap-8 px-2 lg:px-8 py-8 w-full lg:flex-row flex-col"
-      ref={ref}
-    >
-      <div className="w-full lg:w-1/2 bg-white pt-8">
-        <div className="px-[20px] pb-[45px] flex gap-[20px] flex-col md:flex-row">
+      className="flex text-black gap-8 px-2 lg:px-8 py-8 w-full lg:flex-row flex-col">
+      <div className="w-full lg:w-1/2 bg-white pt-8" ref={dropdownRef}>
+        <div ref={dropdownRef} className="px-[20px] pb-[45px] flex gap-[20px] flex-col md:flex-row">
           <p className="bg-[#7044ee] h-[24px] w-[24px] px-[10px] py-[8px] flex items-center justify-center text-white rounded-[50%]">
             1
           </p>
@@ -134,7 +129,7 @@ function Swap() {
                   className="bg-[#f8fafc] border font-semibold text-black flex items-center gap-2 px-6 rounded-tr-md rounded-br-md cursor-pointer"
                   onClick={handleSendOption}
                 >
-                  <img src={selectedSend.img} className="h-[25px] w-[25px]" />
+                  {/* <img src={selectedSend.img} className="h-[25px] w-[25px]" /> */}
                   <p>{selectedSend.Coin}</p>
                   <IoIosArrowDown />
                 </div>
@@ -150,11 +145,11 @@ function Swap() {
                       onClick={() => handleSelectedSend(coin)}
                       className="bg-white font-semibold text-black flex items-center gap-3 px-8 py-2 hover:bg-gray-100 last:border-b-0 border-b border-b-gray-300"
                     >
-                      <img
+                      {/* <img
                         src={coin.img}
                         className="h-[25px] w-[25px]"
                         alt={`${coin.name} logo`}
-                      />
+                      /> */}
                       {coin.Coin}
                     </div>
                   ))}
@@ -168,7 +163,7 @@ function Swap() {
                 {/* <p><ClipLoader size="15px" /></p> */}
                 {balance.wallet_name && selectedSend.Coin ? (
                   <div>
-                    {selectedSend.balance.toFixed(6)} {selectedSend.Coin}
+                    {selectedSend.Total.toFixed(6)} {selectedSend.Coin}
                   </div>
                 ) : (
                   ""
@@ -209,10 +204,10 @@ function Swap() {
                   className="bg-[#f8fafc] border font-semibold text-black flex items-center gap-2 px-6 rounded-tr-md rounded-br-md cursor-pointer"
                   onClick={handleReceiveOption}
                 >
-                  <img
+                  {/* <img
                     src={selectedReceive.img}
                     className="h-[25px] w-[25px]"
-                  />
+                  /> */}
                   <p>{selectedReceive.Coin}</p>
                   <IoIosArrowDown />
                 </div>
@@ -228,11 +223,11 @@ function Swap() {
                       onClick={() => handleSelectedReveice(coin)}
                       className="bg-white font-semibold text-black flex items-center gap-2 px-8 py-3 hover:bg-gray-100 last:border-b-0 border-b border-b-gray-300"
                     >
-                      <img
+                      {/* <img
                         src={coin.img}
                         className="h-[25px] w-[25px]"
                         alt={`${coin.name} logo`}
-                      />
+                      /> */}
                       {coin.Coin}
                     </div>
                   ))}
@@ -242,7 +237,7 @@ function Swap() {
           </div>
         </div>
 
-        <div className="text-black space-y-2 lg:space-y-0 flex justify-between lg:items-center px-6 flex-col lg:flex-row lg:pl-16 lg:pr-6">
+        <div className="text-black space-y-2 lg:space-y-0 flex justify-between lg:items-center px-6 flex-col md:flex-row lg:pl-16 lg:pr-6">
           <div className="flex gap-2">
             <p>Reference exchange rate: </p>
             <p>1 BTC</p>
@@ -273,11 +268,11 @@ function Swap() {
             What coins are available in the swap tool?
           </p>
           <p className="text-gray-400 text-[13px] leading-normal">
-            The Bomib swap tool currently supports all conversions between BTC,
-            ETH, USDT, and USD. These represent the three most popular
-            cryptocurrencies used for trading (BTC, ETH, USDT) as well as the
-            most popular fiat currency (USD). More coins will also be added, so
-            stay tuned!
+            The Horizon Vault swap tool currently supports all conversions
+            between BTC, ETH, USDT, and USD. These represent the three most
+            popular cryptocurrencies used for trading (BTC, ETH, USDT) as well
+            as the most popular fiat currency (USD). More coins will also be
+            added, so stay tuned!
           </p>
         </div>
         <div className="flex flex-col gap-4">
