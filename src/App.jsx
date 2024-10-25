@@ -55,7 +55,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
-    navigate('/signin');
+    navigate('/');
   };
 
   const isTokenExpired = (token) => {
@@ -123,8 +123,8 @@ function App() {
         <Route path="/trading" element={<SpotTrading />} />
       </Route>
 
-      <Route path="/" index element={<AuthRoute><Home element={<Navigate to="/home" replace />} /></AuthRoute>} />
-      <Route path="/home" index element={<AuthRoute><Home /></AuthRoute>} />
+      <Route path="/" index element={<Home element={<Navigate to="/home" replace />} />} />
+      <Route path="home" index element={<Home />} />
       <Route path="*" element={<NotFound />} />
 
       <Route path='/' element={<Index />}>

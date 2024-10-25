@@ -7,7 +7,7 @@ function SubHeaderTwo({ icon, header, content }) {
                 {icon}
 
                 <span>
-                    <h1 className='text-[20px] md:text-[24px] font-extrabold tracking-[1px]'>{header}</h1>
+                    <h1 className='text-[20px] text-white md:text-[24px] font-extrabold tracking-[1px]'>{header}</h1>
                     <p className="text-[12px] md:text-[14px] text-darkgray">{content}</p>
                 </span>
             </div>

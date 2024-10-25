@@ -68,5 +68,4 @@ export class AuthApi extends BaseAPI {
             throw this.formatErrorMessage(error);
         }
     }
-
 }

@@ -79,7 +79,7 @@ function Header() {
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('userDetails');
       localStorage.removeItem('tokenExpiration');
-      navigate('/signin');
+      navigate('/');
     }, 500);
   };
 
