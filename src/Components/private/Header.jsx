@@ -16,6 +16,7 @@ import ProfileTab from '@/Utilities/ProfileTab';
 import Modal from '@/Utilities/Modal';
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
+import { useDispatch, useSelector } from 'react-redux';
 
 function Header() {
   const StyleLink = "rounded-md text-sm font-medium text-gray-300 hover:text-activeColor flex items-center h-[20px] gap-5"
@@ -25,6 +26,13 @@ function Header() {
   const [userEmail, setUserEmail] = useState(null);
   const [userName, setUserName] = useState(null);
   const [userId, setUserId] = useState(null);
+
+  const coins = useSelector((state) => state.coins);
+  const dispatch = useDispatch();
+  
+  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.Total), 0);
+
+  const formattedTotal = totalSum;
 
   const handleDropdown = () => {
     setIsOpen(!isOpen);
@@ -160,7 +168,7 @@ function Header() {
         </Link>
 
         {/* <Link to="#" className={`${StyleLink} lg:block hidden`} onClick={handleLinkClick}>My NFTs</Link>*/}
-        <p className={`${StyleLink} hover:text-[#d1d5db] lg:block hidden`}>Wallet: 0 USD</p> 
+        <Link to="/profile/wallet" className={`${StyleLink} hover:text-[#d1d5db] lg:block hidden`}>Wallet: {formattedTotal} USD</Link> 
       </div>
 
       <div className="relative flex items-center" ref={dropdownRef}>
@@ -191,7 +199,7 @@ function Header() {
                   Assets overview
                 </div>
                 <div className="text-[16px] leading-[22px]">
-                  <span>0</span> USD
+                  {formattedTotal} USD
                 </div>
               </div>
             </div>

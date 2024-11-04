@@ -140,7 +140,7 @@ function Signin() {
 
 
                     <div className='font-semibold pb-4'>
-                        <span className='text-[#78778b]'>Don't have an account? </span><Link to="/signup">Sign up</Link>
+                        <span className='text-[#78778b]'>Don't have an account? </span><Link to="/signup" className='hover:underline text-blue-500'>Sign up</Link>
                     </div>
                 </div>
             </form>

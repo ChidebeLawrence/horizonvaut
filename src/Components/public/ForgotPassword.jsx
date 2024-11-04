@@ -3,6 +3,7 @@ import axios from 'axios';
 import Horiznlogo from "@/assets/images/Horiznlogo.fw.png";
 import { Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
 
 const arrow = (
   <svg width="48" height="46" viewBox="0 0 48 46" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -12,45 +13,75 @@ const arrow = (
   </svg>
 );
 
+
+
 function ForgotPassword() {
   const [message, setMessage] = useState('');
   const [messageColor, setMessageColor] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // const handleForgotPasswordSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(e.target);
+
+  //   setLoading(true);
+
+  //   try {
+  //     const response = await axios.post('https://api.horizonvaut.com/auth/reset-password', {
+  //       email: formData.get('email'),
+  //     });
+
+  //     const messageFromResponse = response.data.message;
+
+  //     if (messageFromResponse.includes("OTP code has been sent to")) {
+  //       setMessageColor('limegreen');
+  //       setMessage(messageFromResponse);
+  //       e.target.reset();
+  //     } else if (messageFromResponse === "user does not exist") {
+  //       setMessageColor('orange');
+  //       setMessage("User does not exist");
+  //     } else {
+  //       setMessageColor('orangered');
+  //       setMessage(messageFromResponse);
+  //     }
+
+  //   } catch (error) {
+  //     console.error(error);
+  //     setMessageColor('orangered');
+  //     setMessage("An error occurred. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleForgotPasswordSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-
+  
     setLoading(true);
-
+  
     try {
       const response = await axios.post('https://api.horizonvaut.com/auth/reset-password', {
         email: formData.get('email'),
       });
-
+  
+      // Display success message on a successful password reset request
       const messageFromResponse = response.data.message;
-
-      if (messageFromResponse.includes("OTP code has been sent to")) {
-        setMessageColor('limegreen');
-        setMessage(messageFromResponse);
-        e.target.reset();
-      } else if (messageFromResponse === "user does not exist") {
-        setMessageColor('orange');
-        setMessage("User does not exist");
-      } else {
-        setMessageColor('orangered');
-        setMessage(messageFromResponse);
-      }
-
+      // setMessageColor('limegreen');
+      // setMessage(messageFromResponse);
+      toast.warn(messageFromResponse);
+      e.target.reset();
+  
     } catch (error) {
-      console.error(error);
-      setMessageColor('orangered');
-      setMessage("An error occurred. Please try again.");
+      console.error(error.response?.data || error.message);
+      // setMessageColor('orangered');
+      // setMessage(error.response?.data?.message || "An error occurred. Please try again.");
+      toast.warn(error.response?.data || error.message)
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className='w-full lg:w-[404px] m-auto py-4 px-6'>
       <Link to="#" className="w-fit flex items-center gap-10 py-[12px]">

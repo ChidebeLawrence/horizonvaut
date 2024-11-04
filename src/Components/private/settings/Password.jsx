@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import classNames from "classnames";
 import Index from "./Index";
 import SubHeaderTwo from "@/Utilities/SubHeaderTwo";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
+import { AuthApi } from "@/api/AuthApi";
 
 function UpdatePassword() {
   const icon = (
@@ -104,11 +105,13 @@ function UpdatePassword() {
     </svg>
   );
 
+  const authApi = new AuthApi();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
 
   const validatePassword = (password) => {
     return password.length >= 8;
@@ -123,27 +126,30 @@ function UpdatePassword() {
       return;
     }
 
-    setLoading(true);
+    setOtpLoading(true);
 
     try {
-      const payload = { email: userEmail };
-      console.log("Sending payload:", payload);
-
-      const response = await axios.post(
-        "https://api.horizonvaut.com/auth/resent-otp",
-        payload
+      const response = await authApi.ResendOTP(userEmail);
+      toast.success(
+        response.message.data.message || "OTP has been sent to your email."
       );
-      if (response.status === 200) {
-        toast.success("OTP has been sent to your email.");
-      } else {
-        toast.error("Failed to send OTP. Please try again.");
-      }
+      setResendCountdown(60);
     } catch (error) {
       toast.error(error ?? "Error resending OTP. Please try again.");
     } finally {
-      setLoading(false);
+      setOtpLoading(false);
     }
   };
+
+  useEffect(() => {
+    let timer;
+    if (resendCountdown > 0) {
+      timer = setInterval(() => {
+        setResendCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendCountdown]);
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
@@ -257,9 +263,27 @@ function UpdatePassword() {
             <button
               type="button"
               onClick={handleResendOtp}
-              disabled={otpLoading}
+              disabled={resendCountdown > 0 || loading} // Disable when countdown is active or loading
+              className={`${
+                resendCountdown > 0 || loading
+                  ? "opacity-50 cursor-default"
+                  : ""
+              }`}
             >
-              {otpLoading ? "Sending OTP..." : "Send OTP"}
+              {otpLoading ? (
+                <div
+                  className={`flex items-center justify-center gap-2 ${
+                    otpLoading ? "opacity-50 cursor-default" : ""
+                  }`}
+                >
+                  <span>Sending OTP </span>
+                  <ClipLoader color="gray" loading={true} size={20} />
+                </div>
+              ) : resendCountdown > 0 ? (
+                `Resend OTP in (${resendCountdown}s)`
+              ) : (
+                "Send OTP"
+              )}
             </button>
 
             <button

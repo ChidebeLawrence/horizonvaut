@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import SubHeader from '@/Utilities/SubHeader'
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoIosArrowDown } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux'
 import Info from '@/assets/images/info.svg'
-import Img from '@/assets/images/btc.png'
-import Empty from '@/assets/images/empty.svg'
 import { ClipLoader } from 'react-spinners';
 import { fetchWalletBalances } from '@/redux/actions';
 
@@ -18,7 +16,6 @@ function Transfer() {
 
     const dispatch = useDispatch();
     const listCoin = useSelector((state) => state.coins);
-    const [balanceMessage, setBalanceMessage] = useState("");
     const [balance, setBalance] = useState({
         balance: 0,
         wallet_name: "BTC"
@@ -280,7 +277,7 @@ function Transfer() {
                                         {Array.isArray(balance) && balance
                                             .filter((coin) => coin.wallet_name === selectedCoin.Coin)
                                             .map((coin, index) => (loading ? (
-                                                <p><ClipLoader size="15px" /></p>
+                                                <ClipLoader size={20} />
                                             ) : (
                                                 <div key={index} className='w-full flex justify-between'>
                                                     <p>{coin.balance.toFixed(6)} {coin.wallet_name}</p>

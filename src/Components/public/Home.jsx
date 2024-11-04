@@ -8,8 +8,20 @@ import TrustPilot from "@/assets/images/trustPilot.svg";
 import Footer from "./Footer";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
+import ClipLoader from "react-spinners/ClipLoader";
+import { fetchCryptos } from "../../redux/actions";
+import { useDispatch, useSelector } from "react-redux";
 
-function home() {
+function Home() {
+  const dispatch = useDispatch();
+  const { coins, loading } = useSelector((state) => state);
+  
+  useEffect(() => {
+    dispatch(fetchCryptos());
+  }, [dispatch]);
+
+  const displayedCryptos = coins.slice(0, 7);
+
   const StyleLink =
     "rounded-md text-[16px] font-normal tracking-[0.5px] hover:text-activeColor flex items-center h-[20px] gap-5 font-[16px] font-semibold";
 
@@ -1022,7 +1034,7 @@ function home() {
           className={classNames(
             // "lg:w-[80%] lgSm:flex lg:static",
             "lg:w-[80%] lgSm:flex lg:static",
-            "mdSm:justify-between mdSm:h-auto mdSm:flex-row",
+            "mdSm:justify-between mdSm:h-auto mdSm:items-center mdSm:flex-row",
             {
               "w-full bg-customDark flex-col absolute z-10 right-0 top-[60px] h-[385] w-[300px] py-[20px] px-[20px] flex gap-[35px] overflow-y-auto":
                 "openMenu",
@@ -1081,7 +1093,7 @@ function home() {
               Profile
             </Link>
           ) : (
-            <div className="hidden smLg:flex lg:w-50%">
+            <div className="hidden smLg:flex lg:w-50% items-center">
               <Link
                 to="/signin"
                 className="font-semibold rounded-[10px] mr-[11px] py-[8px]"
@@ -1090,7 +1102,7 @@ function home() {
               </Link>
               <Link
                 to="/signup"
-                className="font-semibold rounded-[10px] bg-[#5717C7] px-[31px] py-[8px]"
+                className="font-semibold rounded-[10px] bg-[#5717C7] px-[19px] py-[8px]"
               >
                 Sign Up
               </Link>
@@ -1161,17 +1173,11 @@ function home() {
                 ) : (
                   <div className="smLg:flex lg:w-50%">
                     <Link
-                      to="/signin"
+                      to="/signup"
                       className="font-semibold rounded-[10px] mr-[11px] py-[8px]"
                     >
-                      Login
-                    </Link>
-                    {/* <Link
-                      to="/signup"
-                      className="font-semibold rounded-[10px] bg-[#5717C7] px-[31px] py-[8px]"
-                    >
                       Sign Up
-                    </Link> */}
+                    </Link>
                   </div>
                 )}
               </div>
@@ -1297,12 +1303,15 @@ function home() {
             </div>
           </div>
 
-          <Link
-            to="/signup"
-            className="text-[16px] rounded-[10px] bg-[#843EFF] px-[55px] py-[11px] mx-auto flex justify-center w-fit my-[40px]"
-          >
-            Sign Up
-          </Link>
+          <div className="text-[16px] rounded-[10px] bg-[#843EFF] px-[55px] py-[11px] mx-auto flex justify-center w-fit my-[40px]">
+            {token ? (
+              <Link to="/profile/wallet">Profile</Link>
+            ) : (
+              <div className="smLg:flex lg:w-50%">
+                <Link to="/signup">Sign Up</Link>
+              </div>
+            )}
+          </div>
         </div>
 
         <div>
@@ -1316,143 +1325,60 @@ function home() {
             </p>
           </div>
 
-          <div className="overflow-x-auto w-full">
-            <table className="min-w-[800px] w-full">
-              <tbody>
-                <tr className="hover:bg-[#291d4c] rounded">
-                  <td className="flex gap-6 items-center text-[16px] px-8 py-4">
-                    <p>{btc}</p>
-                    <p>Bitcoin</p>
-                    <p className="text-[#77767c]">BTC</p>
-                  </td>
-                  <td className="px-8 py-4">$61516.8800</td>
-                  <td className="px-8 py-4 text-[#49A485]">1.726%</td>
-                  <td className="px-8 py-4">{buy}</td>
-                  <td className="px-8 py-4">
-                    <Link
-                      to="#"
-                      className="text-[15px] py-[5px] px-[27px] border border-[#3E4D73] rounded-md hover:bg-[#7d35b5]"
-                    >
-                      Trade
-                    </Link>
-                  </td>
-                </tr>
-
-                <tr className="hover:bg-[#291d4c] rounded">
-                  <td className="flex gap-6 items-center text-[16px] px-8 py-4">
-                    <p>{eth}</p>
-                    <p>Ethereum</p>
-                    <p className="text-[#77767c]">ETH</p>
-                  </td>
-                  <td className="px-8 py-4">$61516.8800</td>
-                  <td className="px-8 py-4 text-[#49A485]">1.634%</td>
-                  <td className="px-8 py-4">{buy}</td>
-                  <td className="px-8 py-4">
-                    <Link
-                      to="#"
-                      className="text-[15px] py-[5px] px-[27px] border border-[#3E4D73] rounded-md hover:bg-[#7d35b5]"
-                    >
-                      Trade
-                    </Link>
-                  </td>
-                </tr>
-
-                <tr className="hover:bg-[#291d4c] rounded">
-                  <td className="flex gap-6 items-center text-[16px] px-8 py-4">
-                    <p>{bch}</p>
-                    <p>Bitcoin Cash</p>
-                    <p className="text-[#77767c]">BCH</p>
-                  </td>
-                  <td className="px-8 py-4">$321.5000</td>
-                  <td className="px-8 py-4 text-[#49A485]">2.781%</td>
-                  <td className="px-8 py-4">{buy}</td>
-                  <td className="px-8 py-4">
-                    <Link
-                      to="#"
-                      className="text-[15px] py-[5px] px-[27px] border border-[#3E4D73] rounded-md hover:bg-[#7d35b5]"
-                    >
-                      Trade
-                    </Link>
-                  </td>
-                </tr>
-
-                <tr className="hover:bg-[#291d4c] rounded">
-                  <td className="flex gap-6 items-center text-[16px] px-8 py-4">
-                    <p>{xrp}</p>
-                    <p>Ripple</p>
-                    <p className="text-[#77767c]">XRP</p>
-                  </td>
-                  <td className="px-8 py-4">$0.5242</td>
-                  <td className="px-8 py-4 text-[#49A485]">1.021%</td>
-                  <td className="px-8 py-4">{buy}</td>
-                  <td className="px-8 py-4">
-                    <Link
-                      to="#"
-                      className="text-[15px] py-[5px] px-[27px] border border-[#3E4D73] rounded-md hover:bg-[#7d35b5]"
-                    >
-                      Trade
-                    </Link>
-                  </td>
-                </tr>
-
-                <tr className="hover:bg-[#291d4c] rounded">
-                  <td className="flex gap-6 items-center text-[16px] px-8 py-4">
-                    <p>{clink}</p>
-                    <p>Chainlink</p>
-                    <p className="text-[#77767c]">LINK</p>
-                  </td>
-                  <td className="px-8 py-4">$10.9900</td>
-                  <td className="px-8 py-4 text-[#49A485]">4.269%</td>
-                  <td className="px-8 py-4">{buy}</td>
-                  <td className="px-8 py-4">
-                    <Link
-                      to="#"
-                      className="text-[15px] py-[5px] px-[27px] border border-[#3E4D73] rounded-md hover:bg-[#7d35b5]"
-                    >
-                      Trade
-                    </Link>
-                  </td>
-                </tr>
-
-                <tr className="hover:bg-[#291d4c] rounded">
-                  <td className="flex gap-6 items-center text-[16px] px-8 py-4">
-                    <p>{usdt}</p>
-                    <p>Tether</p>
-                    <p className="text-[#77767c]">USDT</p>
-                  </td>
-                  <td className="px-8 py-4">$1.00</td>
-                  <td className="px-8 py-4 text-[#49A485]">-0.02%</td>
-                  <td className="px-8 py-4">{sell}</td>
-                  <td className="px-8 py-4">
-                    <Link
-                      to="#"
-                      className="text-[15px] py-[5px] px-[27px] border border-[#3E4D73] rounded-md hover:bg-[#7d35b5]"
-                    >
-                      Trade
-                    </Link>
-                  </td>
-                </tr>
-
-                <tr className="hover:bg-[#291d4c] rounded">
-                  <td className="flex gap-6 items-center text-[16px] px-8 py-4">
-                    <p>{doge}</p>
-                    <p>Dogecoin</p>
-                    <p className="text-[#77767c]">DOGE</p>
-                  </td>
-                  <td className="px-8 py-4">$0.1089</td>
-                  <td className="px-8 py-4 text-[#49A485]">4.923%</td>
-                  <td className="px-8 py-4">{buy}</td>
-                  <td className="px-8 py-4">
-                    <Link
-                      to="#"
-                      className="text-[15px] py-[5px] px-[27px] border border-[#3E4D73] rounded-md hover:bg-[#7d35b5]"
-                    >
-                      Trade
-                    </Link>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="overflow-x-auto w-full min-h-[530px] relative">
+            {loading ? (
+              <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center">
+                <ClipLoader color="#dadada" />
+              </div>
+            ) : (
+              <table className="min-w-[800px] w-full">
+                <tbody>
+                  {displayedCryptos.map((crypto) => (
+                    <tr key={crypto.id} className="hover:bg-[#291d4c] rounded">
+                      <td className="flex gap-6 items-center text-[16px] px-8 py-4">
+                        <p>
+                          <img
+                            src={crypto.image}
+                            alt={crypto.symbol}
+                            className="w-6 h-6"
+                          />
+                        </p>
+                        <p>{crypto.name}</p>
+                        <p className="text-[#77767c]">
+                          {crypto.symbol}
+                          {/* {crypto.symbol.toUpperCase()} */}
+                        </p>
+                      </td>
+                      <td className="px-8 py-4">
+                        ${crypto.current_price}
+                        {/* ${crypto.current_price.toFixed(4)} */}
+                      </td>
+                      <td
+                        className={`px-8 py-4 flex items-center gap-2 ${
+                          crypto.price_change_percentage_24h >= 0
+                            ? "text-[#49A485]"
+                            : "text-[#E74C3C]"
+                        }`}
+                      >
+                        {crypto.price_change_percentage_24h}%
+                        {/* {crypto.price_change_percentage_24h.toFixed(3)}% */}
+                      </td>
+                      <td className="px-8 py-4">
+                        {crypto.price_change_percentage_24h >= 0 ? buy : sell}
+                      </td>
+                      <td className="px-8 py-4">
+                        <Link
+                          to="#"
+                          className="text-[15px] py-[5px] px-[27px] border border-[#3E4D73] rounded-md hover:bg-[#7d35b5]"
+                        >
+                          Trade
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
 
@@ -1496,7 +1422,13 @@ function home() {
             to="/signup"
             className="bg-[#181121] text-center text-[16px] py-[12px] px-[45px] rounded-md"
           >
-            Sign Up
+            {token ? (
+              <Link to="/profile/wallet">Profile</Link>
+            ) : (
+              <div className="smLg:flex lg:w-50%">
+                <Link to="/signup">Sign Up</Link>
+              </div>
+            )}
           </Link>
         </div>
       </div>
@@ -1506,4 +1438,4 @@ function home() {
   );
 }
 
-export default home;
+export default Home;

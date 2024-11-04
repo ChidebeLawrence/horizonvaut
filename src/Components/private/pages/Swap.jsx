@@ -5,10 +5,13 @@ import Info from "@/assets/images/info.svg";
 
 function Swap() {
   const dropdownRef = useRef(null);
-  const coins = useSelector((state) => state.coins);
+  const { coins, market } = useSelector((state) => state);
   const [amount, setAmount] = useState(0);
   const [send, setSend] = useState(false);
   const [receive, setReceive] = useState(false);
+  const [value, setValue] = useState(null);
+  const [calculatedValue, setCalculatedValue] = useState(0);
+  const [conversionRate, setConversionRate] = useState(0);
   const listCoin = useSelector((state) => state.coins);
 
   const [balance, setBalance] = useState({
@@ -18,19 +21,44 @@ function Swap() {
   const [selectedSend, setSelectedSend] = useState({});
   const [selectedReceive, setSelectedReceive] = useState({});
 
+  useEffect(() => {
+    const sendCoin = market.find((m) => m.name === selectedSend.Coin);
+    const receiveCoin = market.find((m) => m.name === selectedReceive.Coin);
+
+    if (sendCoin && receiveCoin) {
+      const rate = sendCoin.current_price / receiveCoin.current_price;
+      setConversionRate(rate);
+      setCalculatedValue(amount * rate);
+    } else {
+      setConversionRate(0);
+      setCalculatedValue(0);
+    }
+  }, [selectedSend, selectedReceive, amount, market]);
+
+  const formattedConversionRate = conversionRate % 1 === 0 
+  ? conversionRate.toFixed(2)
+  : conversionRate.toFixed(4);
+
+  const formattedCalculatedValue =
+    calculatedValue % 1 === 0
+      ? calculatedValue.toFixed(2)
+      : calculatedValue.toFixed(4);
+
   const handleSendOption = () => {
     setSend((prev) => !prev);
-    setReceive(false)
+    setReceive(false);
   };
   const handleReceiveOption = () => {
     setReceive((prev) => !prev);
-    setSend(false)
+    setSend(false);
   };
   const handleSelectedSend = (coin) => {
     setSelectedSend(coin);
     setSend(false);
   };
   const handleSelectedReveice = (coin) => {
+    const matchedMarket = market.find((m) => m.name === selectedReceive.Coin);
+    setValue(matchedMarket);
     setSelectedReceive(coin);
     setReceive(false);
   };
@@ -49,9 +77,9 @@ function Swap() {
 
     if (coins.length > 0) {
       setSelectedReceive({
-        Coin: coins[1].Coin,
-        img: coins[1].img,
-        Total: coins[1].Total,
+        Coin: coins[3].Coin,
+        img: coins[3].img,
+        Total: coins[3].Total,
       });
     }
   }, [coins]);
@@ -64,10 +92,8 @@ function Swap() {
   };
 
   useEffect(() => {
-    // Set up the event listener
     document.addEventListener("mousedown", handleClickOutside);
 
-    // Clean up the event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -93,10 +119,12 @@ function Swap() {
   );
 
   return (
-    <div
-      className="flex text-black gap-8 px-2 lg:px-8 py-8 w-full lg:flex-row flex-col">
+    <div className="flex text-black gap-8 px-2 lg:px-8 py-8 w-full lg:flex-row flex-col">
       <div className="w-full lg:w-1/2 bg-white pt-8" ref={dropdownRef}>
-        <div ref={dropdownRef} className="px-[20px] pb-[45px] flex gap-[20px] flex-col md:flex-row">
+        <div
+          ref={dropdownRef}
+          className="px-[20px] pb-[45px] flex gap-[20px] flex-col md:flex-row"
+        >
           <p className="bg-[#7044ee] h-[24px] w-[24px] px-[10px] py-[8px] flex items-center justify-center text-white rounded-[50%]">
             1
           </p>
@@ -192,7 +220,7 @@ function Swap() {
                 type="text"
                 placeholder="You will receive"
                 className="bg-[#eaecef] text-black pr-[10rem] rounded-md border border-[#dadada] w-[100%] pl-[20px] py-[18px] focus:outline-none"
-                value={amount}
+                value={formattedCalculatedValue}
                 onChange={(e) => setAmount(e.target.value)}
                 disabled
               />
@@ -240,12 +268,14 @@ function Swap() {
         <div className="text-black space-y-2 lg:space-y-0 flex justify-between lg:items-center px-6 flex-col md:flex-row lg:pl-16 lg:pr-6">
           <div className="flex gap-2">
             <p>Reference exchange rate: </p>
-            <p>1 BTC</p>
+            <p>1 {selectedSend.Coin}</p>
           </div>
 
           <div className="flex gap-2">
             <p>~</p>
-            <p>62691.45000000 USDT</p>
+            <p>
+              {formattedConversionRate} {selectedReceive.Coin}
+            </p>
           </div>
         </div>
 

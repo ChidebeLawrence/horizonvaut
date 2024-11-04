@@ -6,31 +6,28 @@ import { useSelector } from 'react-redux';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Chart = () => {
-  const coins = useSelector((state) => state.coins);
+  const coinsObject = useSelector((state) => state.coins);
+    const coins = Object.values(coinsObject);
 
-  // Separate coins into individual categories and "Other coins"
   const individualCoins = coins.filter(
-    (coin) => coin.Abbr === 'BTC' || coin.Abbr === 'ETH'
+    (coin) => coin.Coin === 'Bitcoin' || coin.Coin === 'Ethereum'
   );
 
   const otherCoins = coins.filter(
-    (coin) => coin.Abbr !== 'BTC' && coin.Abbr !== 'ETH'
+    (coin) => coin.Coin !== 'Bitcoin' && coin.Coin !== 'Ethereum'
   );
 
-  // Calculate data for "Other coins"
   const otherTotal = otherCoins.reduce((sum, coin) => sum + parseFloat(coin.Total), 0);
 
-  // Combine individual coins and "Other coins"
-  const allCoins = [...individualCoins, { Abbr: 'Other', Total: otherTotal }];
-  const labels = allCoins.map((coin) => coin.Abbr);
+  const allCoins = [...individualCoins, { Coin: 'Other', Total: otherTotal }];
+  const labels = allCoins.map((coin) => coin.Coin);
   const totals = allCoins.map((coin) => parseFloat(coin.Total));
 
   const total = totals.reduce((sum, value) => sum + value, 0);
 
-  // Calculate percentages for the chart
   let percentages = [];
   if (total === 0) {
-    percentages = [0.5, 0.5, 99.0]; // Custom percentages for the chart
+    percentages = [0.5, 0.5, 99.0];
   } else {
     percentages = totals.map((value) => (total > 0 ? (value / total) * 100 : 0));
   }
@@ -66,7 +63,6 @@ const Chart = () => {
 
   return (
     <div className="flex items-center justify-center relative py-[20px]">
-    {/* <div className="flex items-center justify-center absolute"> */}
       <div className="relative" style={{ width: '104px', height: '104px' }}>
         <Doughnut data={data} options={options} />
         <div className="absolute inset-0 flex items-center justify-center">
@@ -75,8 +71,8 @@ const Chart = () => {
       </div>
       <div className="ml-6">
         {allCoins.map((coin, index) => (
-          <div key={coin.Abbr} className={`py-[5px] ${index < allCoins.length - 1 ? 'border-b border-[#DADADA]' : ''}`}>
-            <span className="text-[#404053] text-[14px]">{coin.Abbr}</span>
+          <div key={coin.Coin} className={`py-[5px] ${index < allCoins.length - 1 ? 'border-b border-[#DADADA]' : ''}`}>
+            <span className="text-[#404053] text-[14px]">{coin.Coin}</span>
             <span className="text-gray-500"> {total === 0 ? totals[index].toFixed(2) : percentages[index].toFixed(2)}%</span>
           </div>
         ))}

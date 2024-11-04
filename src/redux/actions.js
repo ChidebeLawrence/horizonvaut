@@ -1,5 +1,6 @@
 export const SET_LOADING = "SET_LOADING";
 export const UPDATE_COINS = "UPDATE_COINS";
+export const UPDATE_MARKET = "UPDATE_MARKET";
 
 export const setLoading = (isLoading) => ({
   type: SET_LOADING,
@@ -11,9 +12,14 @@ export const updateCoins = (coins) => ({
   payload: coins,
 });
 
+export const updateMarket = (market) => ({
+  type: "UPDATE_MARKET",
+  payload: market,
+});
+
 export const fetchWalletBalances = () => {
   return async (dispatch) => {
-    dispatch(setLoading(true)); // Set loading to true at the start
+    dispatch(setLoading(true));
     try {
       const token = localStorage.getItem("authToken");
 
@@ -54,7 +60,21 @@ export const fetchWalletBalances = () => {
     } catch (error) {
       console.error("Error fetching wallet balances:", error);
     } finally {
-      dispatch(setLoading(false)); // Set loading to false after completion
+      dispatch(setLoading(false));
     }
   };
+};
+
+export const fetchCryptos = (pageNum = 1) => async (dispatch) => {
+  dispatch(setLoading(true));
+  try {
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=${pageNum}&price_change_percentage=1h,24h,7d`
+    );
+    const data = await response.json();
+    dispatch(updateMarket(data));
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+  dispatch(setLoading(false));
 };
