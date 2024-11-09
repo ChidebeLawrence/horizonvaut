@@ -46,14 +46,16 @@ export const fetchWalletBalances = () => {
         ? result.data
         : result.data.balances || [];
 
+
       const formattedCoins = balances.map((item) => ({
         Coin: item.wallet_name,
         Address: item.wallet_id,
-        Total: item.balance,
+        Total: item.total,
         InOrders: 0,
-        Equivalent: 0,
+        Equivalent: item.balance,
         Deposit: "Deposit",
         Withdraw: "Withdraw",
+        usdAmount: item.balance,
       }));
 
       dispatch(updateCoins(formattedCoins));

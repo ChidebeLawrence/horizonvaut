@@ -53,8 +53,7 @@ function Section() {
 
   const coins = useSelector((state) => state.coins);
   const dispatch = useDispatch();
-
-  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.Total), 0);
+  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.usdAmount), 0);
 
   const formattedTotal = totalSum;
   const approximatedTotal = Math.round(totalSum).toFixed(8);
@@ -188,7 +187,7 @@ function Section() {
                   )}
                 </div>
                 <div className="text-[38px] font-semibold w-fit">
-                  {formattedTotal}$
+                  ${formattedTotal?.toLocaleString('en-US')}
                 </div>
                 <div className="text-[12px]">~ {approximatedTotal}</div>
               </div>
@@ -344,7 +343,7 @@ function Section() {
                         {/* <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span> */}
                       </td>
                       <td className="w-[17.5%]">
-                        {coin.Equivalent}
+                        {String(coin.Total).slice(0, 10)}
                         <span className="text-colorSix ml-[4px]">
                           {coin.Abbr}
                         </span>
@@ -356,7 +355,7 @@ function Section() {
                         </span>
                       </td>
                       <td className="w-[17.5%]">
-                        $ {coin.Total}
+                        $ {coin.usdAmount}
                         <span className="text-colorSix ml-[4px]">USD</span>
                       </td>
                       <td className="w-[17.5%]">
