@@ -14,13 +14,13 @@ import { useDispatch, useSelector } from "react-redux";
 
 function Home() {
   const dispatch = useDispatch();
-  const { coins, loading } = useSelector((state) => state);
-  
+  const { market, loading } = useSelector((state) => state);
+
   useEffect(() => {
     dispatch(fetchCryptos());
   }, [dispatch]);
 
-  const displayedCryptos = coins.slice(0, 7);
+  const displayedCryptos = market.slice(0, 7);
 
   const StyleLink =
     "rounded-md text-[16px] font-normal tracking-[0.5px] hover:text-activeColor flex items-center h-[20px] gap-5 font-[16px] font-semibold";
@@ -1093,7 +1093,7 @@ function Home() {
               Profile
             </Link>
           ) : (
-            <div className="hidden smLg:flex lg:w-50% items-center">
+            <div className="smLg:flex lg:w-50% items-center">
               <Link
                 to="/signin"
                 className="font-semibold rounded-[10px] mr-[11px] py-[8px]"
@@ -1162,25 +1162,21 @@ function Home() {
               >
                 Start Trading
               </Link>
-              <div className="border border-[#843EFF] px-8 py-2 rounded-md">
-                {token ? (
-                  <Link
-                    to="/profile/wallet"
-                    className="text-[16px] font-semibold"
-                  >
-                    Profile
-                  </Link>
-                ) : (
-                  <div className="smLg:flex lg:w-50%">
-                    <Link
-                      to="/signup"
-                      className="font-semibold rounded-[10px] mr-[11px] py-[8px]"
-                    >
-                      Sign Up
-                    </Link>
-                  </div>
-                )}
-              </div>
+              {token ? (
+                <Link
+                  to="/profile/wallet"
+                  className="font-semibold py-[8px] border border-[#843EFF] px-8 py-2 rounded-md"
+                >
+                  Profile
+                </Link>
+              ) : (
+                <Link
+                  to="/signup"
+                  className="font-semibold py-[8px] border border-[#843EFF] px-8 py-2 rounded-md"
+                >
+                  Sign Up
+                </Link>
+              )}
             </div>
 
             <img
@@ -1334,39 +1330,41 @@ function Home() {
               <table className="min-w-[800px] w-full">
                 <tbody>
                   {displayedCryptos.map((crypto) => (
-                    <tr key={crypto.id} className="hover:bg-[#291d4c] rounded">
-                      <td className="flex gap-6 items-center text-[16px] px-8 py-4">
-                        <p>
+                    <tr
+                      key={crypto.id}
+                      className="hover:bg-[#291d4c] rounded h-[75px]"
+                    >
+                      <td className="flex gap-6 items-center text-[16px] pl-8 py-4 pt-[26px]">
+                        <p className="flex items-center gap-2 w-[120px]">
                           <img
                             src={crypto.image}
                             alt={crypto.symbol}
                             className="w-6 h-6"
                           />
+                          <p>{crypto.name}</p>
                         </p>
-                        <p>{crypto.name}</p>
                         <p className="text-[#77767c]">
-                          {crypto.symbol}
-                          {/* {crypto.symbol.toUpperCase()} */}
+                          {crypto.symbol.toUpperCase()}
                         </p>
                       </td>
-                      <td className="px-8 py-4">
-                        ${crypto.current_price}
-                        {/* ${crypto.current_price.toFixed(4)} */}
-                      </td>
+
+                      <td>${crypto.current_price}</td>
+
                       <td
-                        className={`px-8 py-4 flex items-center gap-2 ${
+                        className={`${
                           crypto.price_change_percentage_24h >= 0
                             ? "text-[#49A485]"
                             : "text-[#E74C3C]"
                         }`}
                       >
                         {crypto.price_change_percentage_24h}%
-                        {/* {crypto.price_change_percentage_24h.toFixed(3)}% */}
                       </td>
-                      <td className="px-8 py-4">
+
+                      <td>
                         {crypto.price_change_percentage_24h >= 0 ? buy : sell}
                       </td>
-                      <td className="px-8 py-4">
+
+                      <td>
                         <Link
                           to="#"
                           className="text-[15px] py-[5px] px-[27px] border border-[#3E4D73] rounded-md hover:bg-[#7d35b5]"

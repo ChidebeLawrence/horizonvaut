@@ -228,7 +228,7 @@ function Header() {
                 <img src={Avatar} alt='avatar' className='w-[42px] h-[40]' onClick={handleDropdown} />
                 <div>
                   <p className='text-[12px]'>{userEmail}</p>
-                  <p className='text-[10px]'>{userName}</p>
+                  <p className='text-[11px]'>{userName}</p>
                 </div>
               </Link>
 
