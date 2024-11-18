@@ -16,7 +16,7 @@ import ProfileTab from '@/Utilities/ProfileTab';
 import Modal from '@/Utilities/Modal';
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 function Header() {
   const StyleLink = "rounded-md text-sm font-medium text-gray-300 hover:text-activeColor flex items-center h-[20px] gap-5"
@@ -28,11 +28,10 @@ function Header() {
   const [userId, setUserId] = useState(null);
 
   const coins = useSelector((state) => state.coins);
-  const dispatch = useDispatch();
   
   const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.Total), 0);
 
-  const formattedTotal = totalSum;
+  const formattedTotal = totalSum.toFixed(2);
 
   const handleDropdown = () => {
     setIsOpen(!isOpen);

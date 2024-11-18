@@ -56,7 +56,7 @@ function Section() {
   const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.usdAmount), 0);
 
   const formattedTotal = totalSum;
-  const approximatedTotal = Math.round(totalSum).toFixed(8);
+  const approximatedTotal = Math.round(totalSum).toFixed(4);
 
   const dropdownRef = useRef(null);
   const [userEmail, setUserEmail] = useState(null);
@@ -187,7 +187,7 @@ function Section() {
                   )}
                 </div>
                 <div className="text-[38px] font-semibold w-fit">
-                  {formattedTotal}$
+                  ${formattedTotal?.toLocaleString('en-US')}
                 </div>
                 <div className="text-[12px]">~ {approximatedTotal}</div>
               </div>
@@ -312,16 +312,16 @@ function Section() {
                   <th className="py-[2rem] pl-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[30%] min-w-[180px]">
                     Coin
                   </th>
-                  {/* <th className="py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]">
+                  <th className="py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]">
                     Total
-                  </th> */}
+                  </th>
                   <th className="py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]">
                     In orders
                   </th>
                   <th className="py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]">
                     Equivalent, USD
                   </th>
-                  <th className="py-[2rem] pl-[3rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]">
+                  <th className="py-[2rem] border-b border-gray-300 text-colorFive text-[14px] font-medium w-[17.5%] min-w-[120px]">
                     Actions
                   </th>
                 </tr>
@@ -343,11 +343,11 @@ function Section() {
                         {/* <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span> */}
                       </td>
                       <td className="w-[17.5%]">
-                        {coin.Equivalent}
+                        {String(coin.Total).slice(0, 10)}
                         <span className="text-colorSix ml-[4px]">
                           {coin.Abbr}
                         </span>
-                      </td> */}
+                      </td>
                       <td className="w-[17.5%]">
                         {coin.InOrders}
                         <span className="text-colorSix ml-[4px]">

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
-import { Link } from "react-router-dom";
 
 function Investment() {
   const [wallet, setWallet] = useState("Cash");
@@ -203,6 +202,11 @@ function Investment() {
     fetchInvestmentSchemes();
   }, []);
 
+  function capitalizeFirstLetter(string) {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   return (
     <div className="text-black gap-8 px-4 lg:px-8 py-12">
       <div className="bg-white rounded-2xl p-8">
@@ -276,7 +280,7 @@ function Investment() {
                 </span>
               </p>
               <p className="text-sm mb-6 text-gray-500">
-                Per {selectedPlan.interval}, {selectedPlan.rate}%
+                {capitalizeFirstLetter  (selectedPlan.interval)}, {selectedPlan.rate}%
               </p>
 
               <form onSubmit={handleSubmit(handleInvest)} className="space-y-6">

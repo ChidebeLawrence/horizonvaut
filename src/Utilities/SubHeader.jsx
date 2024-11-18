@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Deposit from "@/assets/images/deposit.svg";
 import Withdraw from "@/assets/images/withdraw.svg";
 import Transfer from "@/assets/images/transfer.svg";
@@ -7,8 +7,6 @@ import History from "@/assets/images/history.svg";
 import classNames from "classnames";
 
 function SubHeader({ sub_header_icon, header, content, onClick }) {
-  const location = useLocation();
-
   return (
     <div
       className={classNames(
