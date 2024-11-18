@@ -28,8 +28,8 @@ function Header() {
   const [userId, setUserId] = useState(null);
 
   const coins = useSelector((state) => state.coins);
-  
-  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.Total), 0);
+  console.log(coins)
+  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin?.usdAmount), 0);
 
   const formattedTotal = totalSum.toFixed(2);
 
@@ -147,7 +147,7 @@ function Header() {
         <Earn header="Earn" onLinkClick={handleLinkClick} setIsModalOpen={setIsModalOpen} />
         <More header="More" onLinkClick={handleLinkClick} setIsModalOpen={setIsModalOpen} /> */}
 
-        <Link to="/" className={`${StyleLink}`} onClick={handleCloseMenu}>
+        <Link to="/profile/wallet" className={`${StyleLink}`} onClick={handleCloseMenu}>
           Home
         </Link>
 
@@ -167,7 +167,7 @@ function Header() {
         </Link>
 
         {/* <Link to="#" className={`${StyleLink} lg:block hidden`} onClick={handleLinkClick}>My NFTs</Link>*/}
-        <Link to="/profile/wallet" className={`${StyleLink} hover:text-[#d1d5db] lg:block hidden`}>Wallet: {formattedTotal} USD</Link> 
+        <Link to="/profile/wallet" className={`${StyleLink} hover:text-[#d1d5db] lg:block hidden`}>Wallet: {Number(formattedTotal)?.toLocaleString('us')} USD</Link>
       </div>
 
       <div className="relative flex items-center" ref={dropdownRef}>
@@ -198,7 +198,7 @@ function Header() {
                   Assets overview
                 </div>
                 <div className="text-[16px] leading-[22px]">
-                  {formattedTotal} USD
+                  {Number(formattedTotal)?.toLocaleString('us')} USD
                 </div>
               </div>
             </div>
