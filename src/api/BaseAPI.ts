@@ -40,7 +40,11 @@ export class BaseAPI {
         const originalRequest = error.config;
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-            // await this.handleTokenRefresh();
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('userDetails');
+            localStorage.removeItem('tokenExpiration');
+            window.location.href = '/signin';
             return this.axiosInstance(originalRequest);
         }
         return Promise.reject(

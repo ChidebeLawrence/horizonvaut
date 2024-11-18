@@ -1,14 +1,12 @@
 import {useState, useRef, useEffect} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {QRCode} from 'antd';
-import {IoIosArrowDown, IoIosArrowUp} from "react-icons/io";
+import {IoIosArrowDown} from "react-icons/io";
 import ClipLoader from "react-spinners/ClipLoader";
 import SubHeader from '@/Utilities/SubHeader'
 import Info from '@/assets/images/info.svg'
 import Card from '@/assets/images/card (1).png'
 import Coin from '@/assets/images/coin.svg'
 import {Link} from 'react-router-dom';
-import {fetchWalletBalances} from '@/redux/actions';
 import {CommonAPI} from "@/api/CommonAPI";
 
 function Deposite() {
@@ -18,30 +16,28 @@ function Deposite() {
     </svg>
 
     const coins = useSelector((state) => state.coins)
-    const depositCoin = coins.filter((coin) => coin.Deposit)
 
     const [loading, setLoading] = useState(true);
-    const [loadingAddress, setLoadingAddress] = useState(true);
+    const [loadingAddress, setLoadingAddress] = useState(false);
     const [selectOption, setSelectOption] = useState(false)
-    const [selectedCoin, setSelectedCoin] = useState({});
+    const [selectedCoin, setSelectedCoin] = useState({
+        id: 1,
+        name : 'Bitcoin'
+    });
     const [coinDetails, setCoinDetails] = useState('');
+    const [coinList, setCoinList] = useState([]);
 
-    const popularCoins = ["Tether", "Bitcoin", "Tron", "Ethereum", "USD Coin", "Dogecoin", "Litecoin"]
     const handleSelectedCoin = (coin) => {
         setSelectedCoin(coin)
         setSelectOption(false)
-        setSelectedNetwork({
-            Coin: coin.Coin,
-            Abbr: coin.Abbr
-        });
     }
 
     useEffect(() => {
         const get_payment_address = async () => {
+            console.log(selectedCoin)
             setLoadingAddress(true)
             const common = new CommonAPI()
-            const result = await common.GetPaymentAddress()
-            console.log(result)
+            const result = await common.GetPaymentAddress(selectedCoin?.id)
             setInputValue(result?.wallet_id);
             setCoinDetails(`${result?.name}  ${result?.wallet_network ?? ''}`);
             setLoadingAddress(false)
@@ -53,23 +49,7 @@ function Deposite() {
         setSelectOption(!selectOption)
     }
 
-    const [openNetwork, setOpenNetwork] = useState(false)
-    const [selectedNetwork, setSelectedNetwork] = useState({
-        Coin: "Bitcoin",
-        Abbr: "BTC",
-    });
-    const networkCoin = depositCoin.filter(
-        (coin) => coin.Coin === selectedNetwork.Coin && coin.Abbr === selectedNetwork.Abbr
-    );
-    const handleSelectNetwork = () => {
-        setOpenNetwork(!openNetwork)
-    }
-    const handleSelectedNetwork = (coin) => {
-        setSelectedNetwork(coin)
-        setOpenNetwork(false)
-    }
 
-    const [size, setSize] = useState(197);
     const [showAddress, setShowAddress] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const handleShowAddress = () => {
@@ -78,10 +58,6 @@ function Deposite() {
         setShowAddress(true);
     };
 
-    const [showCode, setShowCode] = useState(false);
-    const handleCode = () => {
-        setShowCode(!showCode)
-    }
 
     const [inputValue, setInputValue] = useState('');
     const [isCopied, setIsCopied] = useState(false);
@@ -105,16 +81,16 @@ function Deposite() {
     };
 
     const dispatch = useDispatch();
-    const listCoin = useSelector((state) => state.coins);
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true);
-            await dispatch(fetchWalletBalances());
-            setLoading(false);
+            const common = new CommonAPI()
+            const result = await common.GetCoins()
+            setCoinList(result)
+            setLoading(false)
         };
 
-        fetchData();
+        coinList.length === 0 && fetchData().then();
     }, [dispatch]);
 
     useEffect(() => {
@@ -152,7 +128,7 @@ function Deposite() {
                                 <div onClick={handleSelectOption} className='w-full rounded-md cursor-pointer border border-[#dadada] flex items-center justify-between px-[1.5rem] py-[17px]'>
                                     <div className='flex items-center text-[#51535C]'>
                                         {/* <img src={selectedCoin.Image} alt={selectedCoin.Alt} className="h-6 w-6 mr-2" ></img> */}
-                                        <span className='mr-[3px]'>{selectedCoin.Coin}</span>
+                                        <span className='mr-[3px]'>{selectedCoin?.name ?? 'Bitcoin'}</span>
                                         {/* <span className='font-semibold'>{selectedCoin.Abbr}</span> */}
                                     </div>
                                     <IoIosArrowDown/>
@@ -163,11 +139,11 @@ function Deposite() {
                                         :
                                         selectOption && (
                                             <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
-                                                {listCoin.map((coin, index) => (
+                                                {coinList.map((coin, index) => (
                                                     <div onClick={() => handleSelectedCoin(coin)} key={index}
                                                          className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
                                                         {/* <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" /> */}
-                                                        <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
+                                                        <p className='text-[#51535C] mr-[3px]'>{coin.name}</p>
                                                         {/* <p className='font-semibold'>{coin.Abbr}</p> */}
                                                     </div>
                                                 ))}
@@ -178,15 +154,15 @@ function Deposite() {
                                 <p className='text-[12px] py-[10px]'>Popular coins:</p>
                                 <div className='flex flex-col gap-[15px]'>
                                     <div className='flex flex-wrap gap-[7px]'>
-                                        {popularCoins.map((coinName, index) => {
-                                            const selectedCoinData = coins.find(coin => coin.Coin === coinName);
+                                        {coinList?.slice(0, 6).map((coinName, index) => {
+                                            const selectedCoinData = coinList.find(coin => coin === coinName);
 
                                             return (
                                                 <p
                                                     key={index}
                                                     onClick={() => handleSelectedCoin(selectedCoinData)}
                                                     className={`bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[8px] py-[5px] text-[12px] text-[#404053] w-fit cursor-pointer text-center ${selectedCoin && selectedCoin.Coin === selectedCoinData?.Coin ? 'border border-[royalblue]' : ''}`}>
-                                                    {coinName}
+                                                    {coinName?.name}
                                                 </p>
                                             );
                                         })}
@@ -245,7 +221,7 @@ function Deposite() {
                                             <input
                                                 ref={inputRef}
                                                 type="text"
-                                                value={loadingAddress ? 'Loading Address....' :inputValue}
+                                                value={loadingAddress ? 'Loading Address....' : inputValue}
                                                 onChange={handleChange}
                                                 className='rounded-tl-md rounded-bl-md border border-[#dadada] w-full px-[14px] py-[15px] text-center focus:outline-none'
                                                 disabled={true}
