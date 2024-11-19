@@ -6,12 +6,12 @@ import WalletInfoMail from "@/assets/images/walletInfoMail.svg";
 import WalletInfoId from "@/assets/images/wallet_info_id.svg";
 import Unverified from "@/assets/images/unverified.svg";
 import Search from "@/assets/images/search.svg";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Chart from "@/Utilities/Chart";
 import SubHeader from "@/Utilities/SubHeader";
 import classNames from "classnames";
-import { fetchWalletBalances } from "@/redux/actions";
 import ClipLoader from "react-spinners/ClipLoader";
+import {CommonAPI} from "@/api/CommonAPI";
 
 function Section() {
   const wallet_overview = (
@@ -50,10 +50,10 @@ function Section() {
   const styleBothTabs = "flex gap-1 cursor-pointer w-fit";
   const styleMiniTab =
     "flex bg-bgColourThree text-colorThree rounded-md px-[14px] py-[5px] gap-[5px] w-fit uppercase text-[13px] md:text-[10px] md:items-center lg:text-[13px]";
+  const [coins, set_coins] = useState([]);
 
-  const coins = useSelector((state) => state.coins);
   const dispatch = useDispatch();
-  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.usdAmount), 0);
+  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.balance), 0);
 
   const formattedTotal = totalSum;
   const approximatedTotal = Math.round(totalSum).toFixed(4);
@@ -77,12 +77,14 @@ function Section() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const common = new CommonAPI()
       setLoading(true);
-      await dispatch(fetchWalletBalances());
+      const result = await  common.GetAllCoins()
+      set_coins(result)
       setLoading(false);
     };
 
-    fetchData();
+    fetchData().then();
   }, [dispatch]);
 
   useEffect(() => {
@@ -102,10 +104,10 @@ function Section() {
   };
 
   const filteredCoins = coins.filter((coin) => {
-    const matchesSearch = coin?.Coin?.toLowerCase().includes(
+    const matchesSearch = coin?.wallet_name?.toLowerCase().includes(
       searchTerm.toLowerCase()
     );
-    const total = parseFloat(coin?.Total || "0");
+    const total = parseFloat(coin?.total || "0");
     const matchesTotal = !hideZeroEquivalent || total !== 0;
 
     return matchesSearch && matchesTotal;
@@ -338,32 +340,30 @@ function Section() {
                       <td className="flex items-center pl-[0rem] w-[30%] h-[4rem]">
                         {/* <img src={coin.Image} alt={coin.Alt} className='w-[30px] h-[30px]' /> */}
                         <span className="font-semibold ml-[30px] text-[#404053]">
-                          {coin.Coin}
+                          {coin.wallet_name}
                         </span>
                         {/* <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span> */}
                       </td>
                       <td className="w-[17.5%]">
-                        {String(coin.Total).slice(0, 10)}
+                        {String(coin.total).slice(0, 10)}
                         <span className="text-colorSix ml-[4px]">
-                          {coin.Abbr}
+                          {coin.wallet_symbol}
                         </span>
                       </td>
                       <td className="w-[17.5%]">
-                        {coin.InOrders}
+                        0
                         <span className="text-colorSix ml-[4px]">
-                          {coin.Abbr}
+                          {coin.wallet_symbol}
                         </span>
                       </td>
                       <td className="w-[17.5%]">
-                        $ {coin.usdAmount}
+                        $ {coin.balance}
                         <span className="text-colorSix ml-[4px]">USD</span>
                       </td>
                       <td className="w-[17.5%]">
-                        <div className="flex justify-end pr-[5rem]">
-                          <a href="/profile/deposit" className="pr-6">
-                            {coin.Deposit}
-                          </a>
-                          <a href="/profile/withdraw">{coin.Withdraw}</a>
+                        <div className="flex justify-start pr-[5rem]">
+                          <a href="/profile/deposit" className="pr-6">Deposit</a>
+                          <a href="/profile/withdraw">Withdraw</a>
                         </div>
                       </td>
                     </tr>
