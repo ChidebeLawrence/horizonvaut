@@ -22,12 +22,12 @@ function Swap() {
     });
     const [selectedSend, setSelectedSend] = useState({});
     const [selectedReceive, setSelectedReceive] = useState({});
-
     const handleSwap = async () => {
         try {
             setLoading(true)
             const common = new CommonAPI()
-            const result = await common.Swap(selectedSend.Coin, selectedReceive.Coin, Number(amount));
+            console.log(selectedSend.wallet_name, selectedReceive.wallet_name, Number(amount))
+            const result = await common.Swap(selectedSend.wallet_name, selectedReceive.wallet_name, Number(amount));
             toast.success("Coin has been successfully swapped.");
             console.log(result)
         } catch (e) {
@@ -39,9 +39,8 @@ function Swap() {
     }
 
     useEffect(() => {
-        const sendCoin = market.find((m) => m.name === selectedSend.Coin);
-        const receiveCoin = market.find((m) => m.name === selectedReceive.Coin);
-
+        const sendCoin = market.find((m) => m.name === selectedSend.wallet_name);
+        const receiveCoin = market.find((m) => m.name === selectedReceive.wallet_name);
         if (sendCoin && receiveCoin) {
             const rate = sendCoin.current_price / receiveCoin.current_price;
             setConversionRate(rate);
@@ -70,6 +69,7 @@ function Swap() {
         setSend(false);
     };
     const handleSelectedSend = (coin) => {
+        console.log(coin)
         setSelectedSend(coin);
         setSend(false);
     };
@@ -80,23 +80,23 @@ function Swap() {
         setReceive(false);
     };
     const handleAll = () => {
-        setAmount(selectedSend.Total);
+        setAmount(selectedSend.balance);
     };
 
     useEffect(() => {
         if (coins.length > 0) {
             setSelectedSend({
-                Coin: coins[0].Coin,
+                wallet_name: coins[0].wallet_name,
                 img: coins[0].img,
-                Total: coins[0].Total,
+                balance: coins[0].balance,
             });
         }
 
         if (coins.length > 0) {
             setSelectedReceive({
-                Coin: coins[3].Coin,
+                wallet_name: coins[3].wallet_name,
                 img: coins[3].img,
-                Total: coins[3].Total,
+                balance: coins[3].balance,
             });
         }
     }, [coins]);
@@ -175,7 +175,7 @@ function Swap() {
                                     onClick={handleSendOption}
                                 >
                                     {/* <img src={selectedSend.img} className="h-[25px] w-[25px]" /> */}
-                                    <p>{selectedSend.Coin}</p>
+                                    <p>{selectedSend.Coin ?? selectedSend.wallet_name}</p>
                                     <IoIosArrowDown/>
                                 </div>
                             </div>
@@ -184,7 +184,7 @@ function Swap() {
                         <div>
                             {send && (
                                 <div className="h-[318px] z-10 overflow-y-auto absolute right-0 shadow-md rounded-lg py-[6px] bg-white">
-                                    {listCoin.map((coin, index) => (
+                                    {listCoin?.map((coin, index) => (
                                         <div
                                             key={index}
                                             onClick={() => handleSelectedSend(coin)}
@@ -195,7 +195,7 @@ function Swap() {
                         className="h-[25px] w-[25px]"
                         alt={`${coin.name} logo`}
                       /> */}
-                                            {coin.Coin}
+                                            {coin?.wallet_name}
                                         </div>
                                     ))}
                                 </div>
@@ -206,9 +206,9 @@ function Swap() {
                             <p className="flex items-center gap-2">
                                 <p>Available:</p>
                                 {/* <p><ClipLoader size="15px" /></p> */}
-                                {balance.wallet_name && selectedSend.Coin ? (
+                                {balance.wallet_name && selectedSend ? (
                                     <div>
-                                        {selectedSend.Total.toFixed(6)} {selectedSend.Coin}
+                                        {selectedSend?.balance} {selectedSend.wallet_name}
                                     </div>
                                 ) : (
                                     ""
@@ -253,7 +253,7 @@ function Swap() {
                     src={selectedReceive.img}
                     className="h-[25px] w-[25px]"
                   /> */}
-                                    <p>{selectedReceive.Coin}</p>
+                                    <p>{selectedReceive.Coin ?? selectedReceive?.wallet_name}</p>
                                     <IoIosArrowDown/>
                                 </div>
                             </div>
@@ -273,7 +273,7 @@ function Swap() {
                         className="h-[25px] w-[25px]"
                         alt={`${coin.name} logo`}
                       /> */}
-                                            {coin.Coin}
+                                            {coin.wallet_name}
                                         </div>
                                     ))}
                                 </div>
@@ -291,7 +291,7 @@ function Swap() {
                     <div className="flex gap-2">
                         <p>~</p>
                         <p>
-                            {formattedConversionRate} {selectedReceive.Coin}
+                            {formattedConversionRate} {selectedReceive.balance}
                         </p>
                     </div>
                 </div>

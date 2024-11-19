@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { IoIosArrowDown } from "react-icons/io";
+import React, {useState, useEffect} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import {IoIosArrowDown} from "react-icons/io";
 import SubHeader from '@/Utilities/SubHeader'
 import Info from '@/assets/images/info.svg'
-import { Link } from 'react-router-dom';
-import { ClipLoader } from 'react-spinners';
-import { fetchWalletBalances } from '@/redux/actions';
+import {Link} from 'react-router-dom';
+import {ClipLoader} from 'react-spinners';
+import {fetchWalletBalances} from '@/redux/actions';
 
 function Withdraw() {
     const dispatch = useDispatch();
@@ -34,16 +34,10 @@ function Withdraw() {
     const handleSelectedCoin = (coin) => {
         setSelectedCoin(coin)
         setSelectOption(false)
-        setSelectedNetwork({
-            Coin: coin.Coin,
-            Abbr: coin.Abbr
-        });
+        setSelectedNetwork('');
 
     }
-    const [selectedNetwork, setSelectedNetwork] = useState({
-        Coin: "Bitcoin",
-        // Abbr: "BTC",
-    });
+    const [selectedNetwork, setSelectedNetwork] = useState('');
 
     const handleSelectOption = () => {
         setSelectOption(!selectOption)
@@ -64,7 +58,7 @@ function Withdraw() {
         const withdrawalData = {
             destination_address: destinationAddress,
             amount: parseFloat(amount),
-            network: selectedNetwork.Coin,
+            network: selectedNetwork,
             source: selectedCoin.Coin,
         };
 
@@ -93,6 +87,7 @@ function Withdraw() {
                 body: JSON.stringify(withdrawalData),
             });
 
+
             const responseBody = await response.json();
 
             if (response.ok) {
@@ -101,8 +96,8 @@ function Withdraw() {
 
                 setDestinationAddress('');
                 setAmount('');
-                setSelectedCoin({ Coin: '', Abbr: '' });
-                setSelectedNetwork({ Coin: '', Abbr: '' });
+                setSelectedCoin({Coin: '', Abbr: ''});
+                setSelectedNetwork('');
 
             } else {
                 setWithdrawalMessage(responseBody.message || 'Withdrawal failed. Please try again.');
@@ -175,7 +170,7 @@ function Withdraw() {
 
     const handleSelectAll = () => {
         if (selectedCoin && selectedCoin.Total > 0) {
-            setAmount(selectedCoin.Total);
+            setAmount(selectedCoin.usdAmount);
         } else {
             setAmount("0")
         }
@@ -188,7 +183,7 @@ function Withdraw() {
 
     return (
         <div>
-            <SubHeader sub_header_icon={wallet_overview} header="Withdraw coins" content="Withdraw your digital funds in few minutes" />
+            <SubHeader sub_header_icon={wallet_overview} header="Withdraw coins" content="Withdraw your digital funds in few minutes"/>
 
             <div className='flex gap-[2.5rem] py-[45px] px-[1.5rem] flex-col md:px-[3.5rem] lg:flex-row '>
                 <div className='bg-white text-[#667085] rounded-md h-fit w-full lg:w-[70%]'>
@@ -205,13 +200,14 @@ function Withdraw() {
                                         <span className='mr-[3px]'>{selectedCoin.Coin}</span>
                                         {/* <span className='font-semibold'>{selectedCoin.Abbr}</span> */}
                                     </div>
-                                    <IoIosArrowDown />
+                                    <IoIosArrowDown/>
                                 </div>
                                 <div className='relative z-10 shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)'>
-                                    {loading ? (<ClipLoader size="20px" />) : selectOption && (
+                                    {loading ? (<ClipLoader size="20px"/>) : selectOption && (
                                         <div className='absolute w-full bg-white rounded-md h-[318px] overflow-auto border border-[#d0d5dd] shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
                                             {coins.map((coin, index) => (
-                                                <div onClick={() => handleSelectedCoin(coin)} key={index} className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
+                                                <div onClick={() => handleSelectedCoin(coin)} key={index}
+                                                     className='border border-b-[#dadada] cursor-pointer border border-[#dadada] flex items-center px-[1.5rem] py-[15px] text-[#51535C] hover:bg-[#f8fafc]'>
                                                     {/* <img src={coin.Image} alt={coin.Alt} className="h-6 w-6 mr-2" /> */}
                                                     <p className='text-[#51535C] mr-[3px]'>{coin.Coin}</p>
                                                     {/* <p className='font-semibold'>{coin.Abbr}</p> */}
@@ -233,7 +229,9 @@ function Withdraw() {
                                                 {item}
                                             </p>
                                         ))}
-                                        <Link to="/profile/withdraw-usdt" className='bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[8px] py-[5px] text-[12px] text-[#404053] w-fit cursor-pointer text-center'>Bank Card</Link>
+                                        <Link to="/profile/withdraw-usdt"
+                                              className='bg-[#F8FAFC] border border-[#D0D5DD] rounded-[5px] px-[8px] py-[5px] text-[12px] text-[#404053] w-fit cursor-pointer text-center'>Bank
+                                            Card</Link>
 
                                     </div>
                                 </div>
@@ -244,26 +242,20 @@ function Withdraw() {
                             <p className='bg-[#7044ee] h-[24px] w-[24px] px-[10px] py-[8px] flex items-center justify-center text-white rounded-[50%]'>2</p>
                             <div>
                                 <div>
-                                    <p className='text-[#101828] text-[18px] font-semibold'>Select network</p>
-                                    <p className='text-[12px] pt pb-[7px] pb-[15px]'>Please ensure your receiving platform supports the token and network you are withdrawing. If you are unsure, kindly check with the receiving platform first.</p>
+                                    <p className='text-[#101828] text-[18px] font-semibold'>Enter network</p>
+                                    <p className='text-[12px] pt pb-[7px] pb-[15px]'>Please ensure your receiving platform supports the token and network you are withdrawing. If you are unsure, kindly
+                                        check with the receiving platform first.</p>
                                 </div>
 
-                                <div className='flex gap-[7px] relative'>
-                                    <div onClick={handleSelectNetwork} className='w-full cursor-pointer border border-[#dadada] flex items-center justify-between px-[1.5rem] py-[12px]'>
-                                        <div className='flex items-center text-[#51535C]'>
-                                            <span className='mr-[3px]'>{selectedNetwork.Coin}</span>
-                                            {/* <span className='font-semibold'>({selectedNetwork.Abbr})</span> */}
-                                        </div>
-                                        <IoIosArrowDown />
-                                    </div>
-                                    {openNetwork && (
-                                        <div className='absolute top-[47px] w-full shadow-[0_0_10px_rgba(0,_0,_0,_0.25)]'>
-                                            {networkCoin.map((coin, index) => (
-                                                <div key={index} onClickCapture={() => { handleSelectedNetwork(coin) }} className='bg-white cursor-pointer py-[12px] px-[24px] border border-[#dadada] hover:bg-[#f8fafc]'>{selectedNetwork.Coin}</div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Enter destination address"
+                                    className='rounded-md border w-full px-[30px] py-[15px] focus:outline-none mt-4'
+                                    value={selectedNetwork}
+                                    onChange={(e) => handleSelectedNetwork(e.target.value)}
+                                    required
+                                />
+
                             </div>
                         </div>
 
@@ -310,24 +302,25 @@ function Withdraw() {
                                         {Array.isArray(balance) && balance
                                             .filter((coin) => coin.wallet_name === selectedCoin.Coin)
                                             .map((coin, index) => (loading ? (
-                                                <p><ClipLoader size="15px" /></p>
-                                            ) : (
-                                                <div key={index} className='w-full flex justify-between'>
-                                                    <p>{coin.balance.toFixed(6)} {coin.wallet_name}</p>
-                                                    {/* <p className='float-right'>Fee: 0 {coin.wallet_name}</p> */}
-                                                </div>
-                                            )
+                                                    <p><ClipLoader size="15px"/></p>
+                                                ) : (
+                                                    <div key={index} className='w-full flex justify-between'>
+                                                        <p>{coin.balance.toFixed(6)} {coin.wallet_name}</p>
+                                                        {/* <p className='float-right'>Fee: 0 {coin.wallet_name}</p> */}
+                                                    </div>
+                                                )
                                             ))
                                         }
                                     </p>
                                 </div>
 
-                                {withdrawalMessage && <p style={{ color: messageColor }}>{withdrawalMessage}</p>}
+                                {withdrawalMessage && <p style={{color: messageColor}}>{withdrawalMessage}</p>}
                                 <div>
-                                    <button type='submit' className={`bg-[#7044ee] text-white w-full py-[16px] rounded-md mt-[32px] hover:bg-[#825fe9] ${isLoading ? 'opacity-50 cursor-default' : ''}`} disabled={isLoading}>
+                                    <button type='submit' className={`bg-[#7044ee] text-white w-full py-[16px] rounded-md mt-[32px] hover:bg-[#825fe9] ${isLoading ? 'opacity-50 cursor-default' : ''}`}
+                                            disabled={isLoading}>
                                         {isLoading ?
                                             <div className='flex items-center justify-center gap-2'>
-                                                Processing... <ClipLoader color={"#ffffff"} loading={isLoading} size={20} />
+                                                Processing... <ClipLoader color={"#ffffff"} loading={isLoading} size={20}/>
                                             </div>
                                             :
                                             'Withdraw'
@@ -338,8 +331,9 @@ function Withdraw() {
                         </div>
 
                         <p className='flex flex-wrap lg:flex-nowrap items-center lg:justify-center gap-[12px] bg-[#F8FAFC] py-[20px] px-[30px] border border-t-[#dadada] rounded-b-md'>
-                            <img src={Info} alt='info' />
-                            The withdrawal normally completes within 30 min. If your transaction is still not completed within the indicated timeframe, please contact our customer support team for further assistance.
+                            <img src={Info} alt='info'/>
+                            The withdrawal normally completes within 30 min. If your transaction is still not completed within the indicated timeframe, please contact our customer support team for
+                            further assistance.
                         </p>
                     </form>
                 </div>
@@ -361,7 +355,8 @@ function Withdraw() {
                         </div>
                         <div>
                             <p className='text-[14px] font-semibold -[10px] text-[#101820]'>Is withdrawal fee already included in the withdrawal amount I have indicated?</p>
-                            <p>No, the withdrawal fee will charged beyond the indicated withdrawal amount. If traders want to withdraw all the withdrawable amount, traders can click on the "All" button and system will automatically input the amount after fees.</p>
+                            <p>No, the withdrawal fee will charged beyond the indicated withdrawal amount. If traders want to withdraw all the withdrawable amount, traders can click on the "All"
+                                button and system will automatically input the amount after fees.</p>
                         </div>
                         <div>
                             <p className='text-[14px] font-semibold pb-[10px] text-[#101820]'>Does horizonvault.com support withdrawals to a Smart Contract ETH wallet address?</p>

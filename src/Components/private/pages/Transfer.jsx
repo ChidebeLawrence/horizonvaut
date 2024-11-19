@@ -56,6 +56,7 @@ function Transfer() {
             "source": selectedCoin.Coin,
         }
 
+
         const token = localStorage.getItem('authToken');
 
         if (!token) {
@@ -168,7 +169,7 @@ function Transfer() {
 
     const handleSelectAll = () => {
         if (selectedCoin && selectedCoin.Total > 0) {
-            setAmount(selectedCoin.Total);
+            setAmount(selectedCoin.usdAmount);
         } else {
             setAmount("0")
         }

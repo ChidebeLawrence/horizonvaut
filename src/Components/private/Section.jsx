@@ -12,6 +12,7 @@ import SubHeader from "@/Utilities/SubHeader";
 import classNames from "classnames";
 import ClipLoader from "react-spinners/ClipLoader";
 import {CommonAPI} from "@/api/CommonAPI";
+import {updateCoins} from "@/redux/actions";
 
 function Section() {
   const wallet_overview = (
@@ -53,7 +54,7 @@ function Section() {
   const [coins, set_coins] = useState([]);
 
   const dispatch = useDispatch();
-  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.balance), 0);
+  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin.total), 0);
 
   const formattedTotal = totalSum;
   const approximatedTotal = Math.round(totalSum).toFixed(4);
@@ -81,6 +82,7 @@ function Section() {
       setLoading(true);
       const result = await  common.GetAllCoins()
       set_coins(result)
+      dispatch(updateCoins(result));
       setLoading(false);
     };
 
@@ -188,10 +190,10 @@ function Section() {
                     </div>
                   )}
                 </div>
-                <div className="text-[38px] font-semibold w-fit">
+                <div className={` font-semibold w-fit ${String(formattedTotal)?.length > 7 ? 'text-[23px]' : 'text-[38px]' }`}>
                   ${formattedTotal?.toLocaleString('en-US')}
                 </div>
-                <div className="text-[12px]">~ {approximatedTotal}</div>
+                <div className="text-[12px]">~ {Number(approximatedTotal)?.toLocaleString('en-US')}</div>
               </div>
 
               <div className="w-[60%] flex items-center h-full md:ml-[0px]">
@@ -345,7 +347,7 @@ function Section() {
                         {/* <span className='text-colorSix ml-[4px]'>{coin.Abbr}</span> */}
                       </td>
                       <td className="w-[17.5%]">
-                        {String(coin.total).slice(0, 10)}
+                        {String(coin.balance).slice(0, 10)}
                         <span className="text-colorSix ml-[4px]">
                           {coin.wallet_symbol}
                         </span>
@@ -357,7 +359,7 @@ function Section() {
                         </span>
                       </td>
                       <td className="w-[17.5%]">
-                        $ {coin.balance}
+                        $ {Number(coin.total)?.toLocaleString('us')}
                         <span className="text-colorSix ml-[4px]">USD</span>
                       </td>
                       <td className="w-[17.5%]">

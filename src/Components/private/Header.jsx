@@ -28,8 +28,7 @@ function Header() {
   const [userId, setUserId] = useState(null);
 
   const coins = useSelector((state) => state.coins);
-  console.log(coins)
-  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin?.usdAmount), 0);
+  const totalSum = coins.reduce((sum, coin) => sum + parseFloat(coin?.total), 0);
 
   const formattedTotal = totalSum.toFixed(2);
 

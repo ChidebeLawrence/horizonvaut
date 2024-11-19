@@ -10,21 +10,20 @@ const Chart = () => {
     const coins = Object.values(coinsObject);
 
   const individualCoins = coins.filter(
-    (coin) => coin.Coin === 'Bitcoin' || coin.Coin === 'Ethereum'
+    (coin) => coin.wallet_name === 'Bitcoin' || coin.wallet_name === 'Ethereum'
   );
 
   const otherCoins = coins.filter(
-    (coin) => coin.Coin !== 'Bitcoin' && coin.Coin !== 'Ethereum'
+    (coin) => coin.wallet_name !== 'Bitcoin' && coin.wallet_name !== 'Ethereum'
   );
 
-  const otherTotal = otherCoins.reduce((sum, coin) => sum + parseFloat(coin.Total), 0);
+  const otherTotal = otherCoins.reduce((sum, coin) => sum + parseFloat(coin.balance), 0);
 
-  const allCoins = [...individualCoins, { Coin: 'Other', Total: otherTotal }];
-  const labels = allCoins.map((coin) => coin.Coin);
-  const totals = allCoins.map((coin) => parseFloat(coin.Total));
+  const allCoins = [...individualCoins, { wallet_name: 'Other', balance: otherTotal }];
+  const labels = allCoins.map((coin) => coin.wallet_name);
+  const totals = allCoins.map((coin) => Number(coin.balance));
 
   const total = totals.reduce((sum, value) => sum + value, 0);
-
   let percentages = [];
   if (total === 0) {
     percentages = [0.5, 0.5, 99.0];
@@ -71,8 +70,8 @@ const Chart = () => {
       </div>
       <div className="ml-6">
         {allCoins.map((coin, index) => (
-          <div key={coin.Coin} className={`py-[5px] ${index < allCoins.length - 1 ? 'border-b border-[#DADADA]' : ''}`}>
-            <span className="text-[#404053] text-[14px]">{coin.Coin}</span>
+          <div key={coin.wallet_name} className={`py-[5px] ${index < allCoins.length - 1 ? 'border-b border-[#DADADA]' : ''}`}>
+            <span className="text-[#404053] text-[14px]">{coin.wallet_name}</span>
             <span className="text-gray-500"> {total === 0 ? totals[index].toFixed(2) : percentages[index].toFixed(2)}%</span>
           </div>
         ))}
