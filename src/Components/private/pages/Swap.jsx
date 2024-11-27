@@ -23,7 +23,6 @@ function Swap() {
     const [selectedSend, setSelectedSend] = useState({});
     const [selectedReceive, setSelectedReceive] = useState({});
 
-    console.log({selectedSend, selectedReceive})
     const handleSwap = async () => {
         try {
             setLoading(true)
@@ -43,6 +42,8 @@ function Swap() {
     useEffect(() => {
         const sendCoin = market.find((m) => m.name === selectedSend.wallet_name);
         const receiveCoin = market.find((m) => m.name === selectedReceive.wallet_name);
+
+        console.log({sendCoin, receiveCoin})
         if (sendCoin && receiveCoin) {
             const rate = sendCoin.rate / receiveCoin.rate;
             setConversionRate(rate);
