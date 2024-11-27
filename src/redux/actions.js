@@ -1,3 +1,5 @@
+import {CommonAPI} from "@/api/CommonAPI";
+
 export const SET_LOADING = "SET_LOADING";
 export const UPDATE_COINS = "UPDATE_COINS";
 export const UPDATE_MARKET = "UPDATE_MARKET";
@@ -70,11 +72,11 @@ export const fetchWalletBalances = () => {
 export const fetchCryptos = (pageNum = 1) => async (dispatch) => {
   dispatch(setLoading(true));
   try {
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=${pageNum}&price_change_percentage=1h,24h,7d`
-    );
-    const data = await response.json();
-    dispatch(updateMarket(data));
+
+    const common = new CommonAPI()
+    const response  = await common.GetMarketPrices()
+    console.log(response)
+    dispatch(updateMarket(response));
   } catch (error) {
     console.error("Error fetching data:", error);
   }

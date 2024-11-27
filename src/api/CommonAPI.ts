@@ -29,6 +29,15 @@ export class CommonAPI extends BaseAPI {
         }
     }
 
+    public async GetMarketPrices(): Promise<{ response: object }> {
+        try {
+            const response = await this.axiosInstance.get(`/investment/coins`);
+            return response?.data?.data
+        } catch (error) {
+            throw this.formatErrorMessage(error);
+        }
+    }
+
     public async GetInvestmentSchemes(): Promise<{ response: object }> {
         try {
             const response = await this.axiosInstance.get(`/investment/schemes`);

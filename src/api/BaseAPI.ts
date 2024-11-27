@@ -44,11 +44,11 @@ export class BaseAPI {
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('userDetails');
             localStorage.removeItem('tokenExpiration');
-            window.location.href = '/signin';
+            // window.location.href = '/signin';
             return this.axiosInstance(originalRequest);
         }
         return Promise.reject(
-            this.formatErrorMessage(error?.response?.data?.message),
+            this.formatErrorMessage(error?.response?.data?.message ?? error?.message),
         );
     }
 

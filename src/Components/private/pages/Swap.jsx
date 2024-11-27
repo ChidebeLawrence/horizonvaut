@@ -22,6 +22,8 @@ function Swap() {
     });
     const [selectedSend, setSelectedSend] = useState({});
     const [selectedReceive, setSelectedReceive] = useState({});
+
+    console.log({selectedSend, selectedReceive})
     const handleSwap = async () => {
         try {
             setLoading(true)
@@ -42,7 +44,7 @@ function Swap() {
         const sendCoin = market.find((m) => m.name === selectedSend.wallet_name);
         const receiveCoin = market.find((m) => m.name === selectedReceive.wallet_name);
         if (sendCoin && receiveCoin) {
-            const rate = sendCoin.current_price / receiveCoin.current_price;
+            const rate = sendCoin.rate / receiveCoin.rate;
             setConversionRate(rate);
             setCalculatedValue(amount * rate);
         } else {
@@ -285,13 +287,13 @@ function Swap() {
                 <div className="text-black space-y-2 lg:space-y-0 flex justify-between lg:items-center px-6 flex-col md:flex-row lg:pl-16 lg:pr-6">
                     <div className="flex gap-2">
                         <p>Reference exchange rate: </p>
-                        <p>1 {selectedSend.Coin}</p>
+                        <p>1 {selectedSend.wallet_name} =  {formattedConversionRate} {selectedReceive.wallet_name}</p>
                     </div>
 
                     <div className="flex gap-2">
-                        <p>~</p>
+
                         <p>
-                            {formattedConversionRate} {selectedReceive.balance}
+                            Available - {selectedReceive.balance}
                         </p>
                     </div>
                 </div>
