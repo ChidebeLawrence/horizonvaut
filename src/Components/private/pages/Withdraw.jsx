@@ -78,7 +78,7 @@ function Withdraw() {
         }
 
         try {
-            const response = await fetch("https://api.horizonvaut.com/wallet/withdraw", {
+            const response = await fetch("https://api.fomobitmax.com/wallet/withdraw", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ function Withdraw() {
         }
 
         try {
-            const response = await fetch("https://api.horizonvaut.com/wallet/balance", {
+            const response = await fetch("https://api.fomobitmax.com/wallet/balance", {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",

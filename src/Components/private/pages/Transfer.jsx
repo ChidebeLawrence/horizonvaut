@@ -67,7 +67,7 @@ function Transfer() {
         }
 
         try {
-            const response = await fetch("https://api.horizonvaut.com/wallet/transfer", {
+            const response = await fetch("https://api.fomobitmax.com/wallet/transfer", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -118,7 +118,7 @@ function Transfer() {
         }
 
         try {
-            const response = await fetch("https://api.horizonvaut.com/wallet/balance", {
+            const response = await fetch("https://api.fomobitmax.com/wallet/balance", {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",

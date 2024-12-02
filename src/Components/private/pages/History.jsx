@@ -57,7 +57,7 @@ function History() {
     try {
       const token = localStorage.getItem("authToken");
       const response = await fetch(
-        "https://api.horizonvaut.com/wallet/history",
+        "https://api.fomobitmax.com/wallet/history",
         {
           method: "GET",
           headers: {
@@ -125,7 +125,7 @@ function History() {
       }
   
       const response = await fetch(
-        "https://api.horizonvaut.com/investment/all",
+        "https://api.fomobitmax.com/investment/all",
         {
           method: "GET",
           headers: {

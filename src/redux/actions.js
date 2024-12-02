@@ -30,7 +30,7 @@ export const fetchWalletBalances = () => {
       }
 
       const response = await fetch(
-        "https://api.horizonvaut.com/wallet/balance",
+        "https://api.fomobitmax.com/wallet/balance",
         {
           headers: {
             Authorization: `Bearer ${token}`,

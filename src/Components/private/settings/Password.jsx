@@ -182,7 +182,7 @@ function UpdatePassword() {
       };
 
       const response = await axios.post(
-        "https://api.horizonvaut.com/auth/update-password",
+        "https://api.fomobitmax.com/auth/update-password",
         payload
       );
 

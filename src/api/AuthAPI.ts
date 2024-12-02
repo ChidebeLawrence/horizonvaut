@@ -25,7 +25,11 @@ export class AuthApi extends BaseAPI {
                 password,
                 email,
             });
-
+            console.log({
+                password,
+                email,
+            })
+            console.log(response)
             return response?.data;
         } catch (error) {
             throw this.formatErrorMessage(error);

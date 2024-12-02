@@ -34,7 +34,7 @@ function Investment() {
             setLoadingWallet(true); // Set loading for wallet fetch
             const authToken = localStorage.getItem("authToken");
             const response = await fetch(
-                "https://api.horizonvaut.com/investment/payment-wallet",
+                "https://api.fomobitmax.com/investment/payment-wallet",
                 {
                     method: "GET",
                     headers: {
@@ -71,7 +71,7 @@ function Investment() {
             setLoading(true);
             const authToken = localStorage.getItem("authToken");
             const response = await fetch(
-                "https://api.horizonvaut.com/investment/create-investment",
+                "https://api.fomobitmax.com/investment/create-investment",
                 {
                     method: "POST",
                     headers: {
@@ -114,7 +114,7 @@ function Investment() {
             setIsConfirming(true);
             const authToken = localStorage.getItem("authToken");
             const response = await fetch(
-                "https://api.horizonvaut.com/investment/confirm-payment",
+                "https://api.fomobitmax.com/investment/confirm-payment",
                 {
                     method: "POST",
                     headers: {

@@ -11,7 +11,7 @@ import {
   
       try {
         const token = localStorage.getItem("authToken"); // Get token from local storage
-        const response = await fetch(`https://api.horizonvault.com/wallet/withdraw`, {
+        const response = await fetch(`https://api.fomobitmax.com/wallet/withdraw`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
