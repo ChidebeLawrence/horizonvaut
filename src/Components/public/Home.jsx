@@ -1033,7 +1033,7 @@ function Home() {
         <div
           className={classNames(
             // "lg:w-[80%] lgSm:flex lg:static",
-            "lg:w-[80%] lgSm:flex lg:static",
+            "lgSm:w-[80%] lgSm:flex lgSm:static",
             "mdSm:justify-between mdSm:h-auto mdSm:items-center mdSm:flex-row",
             {
               "w-full bg-customDark flex-col absolute z-10 right-0 top-[60px] h-[385] w-[300px] py-[20px] px-[20px] flex gap-[35px] overflow-y-auto":
@@ -1112,12 +1112,12 @@ function Home() {
 
         {openMenu ? (
           <IoClose
-            className="h-[25px] w-[25px] cursor-pointer lg:hidden"
+            className="h-[25px] w-[25px] cursor-pointer lgSm:hidden"
             onClick={handleOpenMenu}
           />
         ) : (
           <GiHamburgerMenu
-            className="h-[25px] w-[25px] cursor-pointer lg:hidden"
+            className="h-[25px] w-[25px] cursor-pointer lgSm:hidden"
             onClick={handleOpenMenu}
           />
         )}
